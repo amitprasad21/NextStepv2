@@ -1,12 +1,12 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
+import { createServiceClient } from '@/lib/supabase/server'
 
 /**
  * Auth callback handler — handles magic link, Google OAuth, AND email confirmation.
- * After Supabase sends a magic link, Google redirects, or email is confirmed,
- * the user lands here with a `code` query param. We exchange it for a session,
- * upsert the public.users record, and redirect based on DB role.
+ * Uses the service-role client for DB writes (bypasses RLS).
+ * Uses the session client for auth token exchange.
  */
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
@@ -14,6 +14,7 @@ export async function GET(request: Request) {
 
   if (code) {
     const cookieStore = await cookies()
+    // Session client — for exchanging auth code
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -39,9 +40,11 @@ export async function GET(request: Request) {
 
     if (!error && sessionData.user) {
       const authUser = sessionData.user
+      // Service client for DB writes — bypasses RLS
+      const admin = createServiceClient()
 
-      // Upsert public.users — role defaults to 'student' for new users
-      const { data: existingUser } = await supabase
+      // Check if user record already exists
+      const { data: existingUser } = await admin
         .from('users')
         .select('id, role')
         .eq('auth_id', authUser.id)
@@ -51,9 +54,8 @@ export async function GET(request: Request) {
       let isNewUser = false
 
       if (!existingUser) {
-        // New user — insert with role='student'
         isNewUser = true
-        const { error: insertError } = await supabase.from('users').insert({
+        const { error: insertError } = await admin.from('users').insert({
           auth_id: authUser.id,
           email: authUser.email!,
           role: 'student',
@@ -61,12 +63,10 @@ export async function GET(request: Request) {
         })
 
         if (insertError) {
-          // Race condition: user might have been created between check and insert
           if (insertError.code !== '23505') {
             console.error('Error creating user record:', insertError.message)
           }
-          // Re-fetch to get whatever record exists
-          const { data: raceUser } = await supabase
+          const { data: raceUser } = await admin
             .from('users')
             .select('id, role')
             .eq('auth_id', authUser.id)
@@ -77,15 +77,15 @@ export async function GET(request: Request) {
             isNewUser = false
           }
         } else {
-          // Dispatch welcome notification
-          const { data: newUser } = await supabase
+          // Send welcome notification
+          const { data: newUser } = await admin
             .from('users')
             .select('id')
             .eq('auth_id', authUser.id)
             .single()
 
           if (newUser) {
-            await supabase.from('notifications').insert({
+            await admin.from('notifications').insert({
               student_id: newUser.id,
               type: 'welcome',
               channel: 'in_app',
@@ -110,7 +110,7 @@ export async function GET(request: Request) {
 
       // Existing student — check is_complete
       if (existingUser) {
-        const { data: profile } = await supabase
+        const { data: profile } = await admin
           .from('student_profiles')
           .select('is_complete')
           .eq('user_id', existingUser.id)
@@ -125,6 +125,5 @@ export async function GET(request: Request) {
     }
   }
 
-  // Auth error — redirect to login with error
   return NextResponse.redirect(new URL('/auth/login?error=auth_failed', request.url))
 }

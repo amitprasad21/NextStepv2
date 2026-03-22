@@ -301,10 +301,10 @@ export function LandingClient({ colleges }: { colleges: FeaturedCollege[] }) {
               <AnimatedSection key={item.step} delay={i * 0.15}>
                 <div className="group relative rounded-2xl border border-border/60 bg-card p-7 transition-all duration-500 hover:shadow-lifted">
                   <span className="text-5xl font-bold text-primary/10 transition-colors duration-500 group-hover:text-primary/20"
-                        style={{ fontFamily: 'var(--font-serif, Georgia, serif)' }}>
+                        style={{ fontFamily: 'var(--font-serif)' }}>
                     {item.step}
                   </span>
-                  <h3 className="mt-3 text-lg font-semibold text-foreground" style={{ fontFamily: 'var(--font-sans, Inter, sans-serif)' }}>
+                  <h3 className="mt-3 text-lg font-semibold text-foreground" style={{ fontFamily: 'var(--font-sans)' }}>
                     {item.title}
                   </h3>
                   <p className="mt-2 text-sm leading-relaxed text-muted-foreground">

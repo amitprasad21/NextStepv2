@@ -1,17 +1,16 @@
 import type { Metadata } from 'next'
-import { Inter, DM_Serif_Display } from 'next/font/google'
+import { Plus_Jakarta_Sans, Playfair_Display } from 'next/font/google'
 import { QueryProvider } from '@/components/providers/query-provider'
 import './globals.css'
 
-const inter = Inter({
-  variable: '--font-inter',
+const jakarta = Plus_Jakarta_Sans({
+  variable: '--font-sans',
   subsets: ['latin'],
   display: 'swap',
 })
 
-const dmSerif = DM_Serif_Display({
+const playfair = Playfair_Display({
   variable: '--font-serif',
-  weight: '400',
   subsets: ['latin'],
   display: 'swap',
 })
@@ -33,9 +32,10 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${dmSerif.variable} h-full antialiased`}
+      data-scroll-behavior="smooth"
+      className={`${jakarta.variable} ${playfair.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col font-sans">
         <QueryProvider>{children}</QueryProvider>
       </body>
     </html>

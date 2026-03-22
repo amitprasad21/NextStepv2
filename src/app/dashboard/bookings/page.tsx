@@ -135,7 +135,7 @@ export default function BookingsPage() {
           animate={{ opacity: 1, height: 'auto' }}
           className="mt-5 overflow-hidden rounded-2xl border border-border/60 bg-card p-6 shadow-soft"
         >
-          <h3 className="text-lg font-bold text-foreground" style={{ fontFamily: 'var(--font-sans, Inter, sans-serif)' }}>
+          <h3 className="text-lg font-bold text-foreground" style={{ fontFamily: 'var(--font-sans)' }}>
             Select a Time Slot
           </h3>
           <p className="mt-1 text-xs text-muted-foreground">Choose an available slot for your free counselling call.</p>
@@ -189,7 +189,7 @@ export default function BookingsPage() {
 
       {/* Bookings list */}
       <div className="mt-8">
-        <h2 className="text-lg font-bold text-foreground" style={{ fontFamily: 'var(--font-sans, Inter, sans-serif)' }}>
+        <h2 className="text-lg font-bold text-foreground" style={{ fontFamily: 'var(--font-sans)' }}>
           Your Bookings
         </h2>
         {loading ? (

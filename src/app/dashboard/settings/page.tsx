@@ -78,7 +78,7 @@ export default function SettingsPage() {
           className="mt-8 space-y-5 rounded-2xl border border-border/60 bg-card p-7 shadow-soft"
         >
           <div>
-            <h2 className="text-lg font-bold text-foreground" style={{ fontFamily: 'var(--font-sans, Inter, sans-serif)' }}>
+            <h2 className="text-lg font-bold text-foreground" style={{ fontFamily: 'var(--font-sans)' }}>
               Profile Details
             </h2>
             <p className="mt-0.5 text-xs text-muted-foreground">Update your personal information here.</p>
@@ -164,7 +164,7 @@ export default function SettingsPage() {
         transition={{ delay: 0.1 }}
         className="mt-6 rounded-2xl border border-border/60 bg-card p-7 shadow-soft"
       >
-        <h2 className="text-lg font-bold text-foreground" style={{ fontFamily: 'var(--font-sans, Inter, sans-serif)' }}>
+        <h2 className="text-lg font-bold text-foreground" style={{ fontFamily: 'var(--font-sans)' }}>
           Account
         </h2>
         <p className="mt-0.5 text-xs text-muted-foreground">Manage your account settings.</p>

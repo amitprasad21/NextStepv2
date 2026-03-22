@@ -98,7 +98,7 @@ export default async function DashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">{stat.label}</p>
-                <p className="mt-2 text-3xl font-bold text-foreground" style={{ fontFamily: 'var(--font-serif, Georgia, serif)' }}>
+                <p className="mt-2 text-3xl font-bold text-foreground" style={{ fontFamily: 'var(--font-serif)' }}>
                   {stat.value}
                 </p>
               </div>
@@ -117,7 +117,7 @@ export default async function DashboardPage() {
         {/* Recent Bookings */}
         <div className="rounded-2xl border border-border/60 bg-card p-6 shadow-soft">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-foreground" style={{ fontFamily: 'var(--font-sans, Inter, sans-serif)' }}>
+            <h2 className="text-lg font-bold text-foreground" style={{ fontFamily: 'var(--font-sans)' }}>
               Recent Bookings
             </h2>
             <Link href="/dashboard" className="text-xs font-semibold text-primary hover:text-primary-dark transition-colors">
@@ -160,7 +160,7 @@ export default async function DashboardPage() {
         {/* Recent Visits */}
         <div className="rounded-2xl border border-border/60 bg-card p-6 shadow-soft">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-foreground" style={{ fontFamily: 'var(--font-sans, Inter, sans-serif)' }}>
+            <h2 className="text-lg font-bold text-foreground" style={{ fontFamily: 'var(--font-sans)' }}>
               Recent Visit Requests
             </h2>
           </div>

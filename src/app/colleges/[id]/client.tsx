@@ -82,7 +82,7 @@ export function CollegeDetailClient({
         {courseList.length > 0 && (
           <AnimatedSection delay={0.1} className="mt-6">
             <div className="rounded-2xl border border-border/60 bg-card p-7 shadow-soft">
-              <h2 className="text-xl font-bold text-foreground" style={{ fontFamily: 'var(--font-sans, Inter, sans-serif)' }}>
+              <h2 className="text-xl font-bold text-foreground" style={{ fontFamily: 'var(--font-sans)' }}>
                 Courses Offered
               </h2>
               <div className="mt-5 space-y-3">
@@ -96,7 +96,7 @@ export function CollegeDetailClient({
                     className="group rounded-xl border border-border/60 p-5 transition-all duration-300 hover:shadow-soft hover:border-primary/20"
                   >
                     <div className="flex items-center justify-between">
-                      <h3 className="font-semibold text-foreground" style={{ fontFamily: 'var(--font-sans, Inter, sans-serif)' }}>
+                      <h3 className="font-semibold text-foreground" style={{ fontFamily: 'var(--font-sans)' }}>
                         {course.course_name}
                       </h3>
                       <span className="rounded-full bg-primary-light px-3 py-1 text-xs font-semibold text-primary">

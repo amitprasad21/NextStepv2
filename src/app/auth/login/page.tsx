@@ -157,7 +157,7 @@ function LoginContent() {
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 backdrop-blur-sm">
               <span className="text-sm font-bold text-white">N</span>
             </div>
-            <span className="text-xl font-bold text-white" style={{ fontFamily: 'var(--font-serif, Georgia, serif)' }}>
+            <span className="text-xl font-bold text-white" style={{ fontFamily: 'var(--font-serif)' }}>
               NextStep
             </span>
           </Link>
@@ -217,7 +217,7 @@ function LoginContent() {
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary shadow-md">
               <span className="text-sm font-bold text-primary-foreground">N</span>
             </div>
-            <span className="text-xl font-bold text-foreground" style={{ fontFamily: 'var(--font-serif, Georgia, serif)' }}>
+            <span className="text-xl font-bold text-foreground" style={{ fontFamily: 'var(--font-serif)' }}>
               NextStep
             </span>
           </Link>

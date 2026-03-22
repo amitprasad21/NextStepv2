@@ -78,7 +78,7 @@ export default function AdminDashboard() {
                 </svg>
               </div>
             </div>
-            <p className="mt-3 text-3xl font-bold text-foreground" style={{ fontFamily: 'var(--font-serif, Georgia, serif)' }}>
+            <p className="mt-3 text-3xl font-bold text-foreground" style={{ fontFamily: 'var(--font-serif)' }}>
               {card.value.toLocaleString('en-IN')}
             </p>
           </motion.div>
@@ -94,7 +94,7 @@ export default function AdminDashboard() {
           transition={{ delay: 0.3 }}
           className="rounded-2xl border border-border/60 bg-card p-6 shadow-soft"
         >
-          <h2 className="text-lg font-bold text-foreground" style={{ fontFamily: 'var(--font-sans, Inter, sans-serif)' }}>
+          <h2 className="text-lg font-bold text-foreground" style={{ fontFamily: 'var(--font-sans)' }}>
             Bookings by Status
           </h2>
           <div className="mt-5 space-y-3">
@@ -121,7 +121,7 @@ export default function AdminDashboard() {
           transition={{ delay: 0.4 }}
           className="rounded-2xl border border-border/60 bg-card p-6 shadow-soft"
         >
-          <h2 className="text-lg font-bold text-foreground" style={{ fontFamily: 'var(--font-sans, Inter, sans-serif)' }}>
+          <h2 className="text-lg font-bold text-foreground" style={{ fontFamily: 'var(--font-sans)' }}>
             Visits by Status
           </h2>
           <div className="mt-5 space-y-3">

@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import { createVisitSchema } from '@/validators/visit'
 
@@ -10,10 +10,12 @@ export async function GET() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { data: dbUser } = await supabase.from('users').select('id').eq('auth_id', user.id).single()
+  const admin = createServiceClient()
+
+  const { data: dbUser } = await admin.from('users').select('id').eq('auth_id', user.id).single()
   if (!dbUser) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
-  const { data, error } = await supabase
+  const { data, error } = await admin
     .from('college_visits')
     .select('*, college:colleges(id, name, city, state)')
     .eq('student_id', dbUser.id)
@@ -32,11 +34,13 @@ export async function POST(request: Request) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { data: dbUser } = await supabase.from('users').select('id').eq('auth_id', user.id).single()
+  const admin = createServiceClient()
+
+  const { data: dbUser } = await admin.from('users').select('id').eq('auth_id', user.id).single()
   if (!dbUser) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
   // Check is_complete
-  const { data: profile } = await supabase
+  const { data: profile } = await admin
     .from('student_profiles')
     .select('is_complete')
     .eq('user_id', dbUser.id)
@@ -55,7 +59,7 @@ export async function POST(request: Request) {
   const { college_id, visit_date, visit_time } = parsed.data
 
   // Check college is active
-  const { data: college } = await supabase
+  const { data: college } = await admin
     .from('colleges')
     .select('id, daily_visit_capacity, status, is_deleted')
     .eq('id', college_id)
@@ -66,7 +70,7 @@ export async function POST(request: Request) {
   }
 
   // Check daily capacity
-  const { count } = await supabase
+  const { count } = await admin
     .from('college_visits')
     .select('*', { count: 'exact', head: true })
     .eq('college_id', college_id)
@@ -80,7 +84,7 @@ export async function POST(request: Request) {
     )
   }
 
-  const { data: visit, error } = await supabase
+  const { data: visit, error } = await admin
     .from('college_visits')
     .insert({
       student_id: dbUser.id,
@@ -93,8 +97,6 @@ export async function POST(request: Request) {
     .single()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-
-  // NO notification dispatched here — per PRD
 
   return NextResponse.json({ data: visit }, { status: 201 })
 }

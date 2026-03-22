@@ -13,7 +13,7 @@ export function Footer() {
               </div>
               <span
                 className="text-xl font-bold text-white tracking-tight"
-                style={{ fontFamily: 'var(--font-serif, Georgia, serif)' }}
+                style={{ fontFamily: 'var(--font-serif)' }}
               >
                 NextStep
               </span>
@@ -27,7 +27,7 @@ export function Footer() {
           {/* Quick Links */}
           <div>
             <h4 className="text-sm font-semibold uppercase tracking-wider text-white/40"
-                style={{ fontFamily: 'var(--font-sans, Inter, sans-serif)' }}>
+                style={{ fontFamily: 'var(--font-sans)' }}>
               Explore
             </h4>
             <ul className="mt-4 space-y-3">
@@ -50,15 +50,15 @@ export function Footer() {
           {/* Resources */}
           <div>
             <h4 className="text-sm font-semibold uppercase tracking-wider text-white/40"
-                style={{ fontFamily: 'var(--font-sans, Inter, sans-serif)' }}>
+                style={{ fontFamily: 'var(--font-sans)' }}>
               For Students
             </h4>
             <ul className="mt-4 space-y-3">
               {[
-                { href: '/auth/login', label: 'Book Counselling' },
-                { href: '/auth/login', label: 'Schedule Visit' },
+                { href: '/auth/login', label: 'Book Counselling', key: 'counselling' },
+                { href: '/auth/login', label: 'Schedule Visit', key: 'visit' },
               ].map((link) => (
-                <li key={link.href}>
+                <li key={link.key}>
                   <Link
                     href={link.href}
                     className="text-sm text-white/60 transition-colors duration-200 hover:text-white"
@@ -73,7 +73,7 @@ export function Footer() {
           {/* Contact */}
           <div>
             <h4 className="text-sm font-semibold uppercase tracking-wider text-white/40"
-                style={{ fontFamily: 'var(--font-sans, Inter, sans-serif)' }}>
+                style={{ fontFamily: 'var(--font-sans)' }}>
               Contact
             </h4>
             <ul className="mt-4 space-y-3">

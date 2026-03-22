@@ -107,7 +107,7 @@ export default function AdminCollegesPage() {
             className="overflow-hidden"
           >
             <div className="mt-5 rounded-2xl border border-border/60 bg-card p-6 shadow-soft space-y-4">
-              <h3 className="text-sm font-semibold text-foreground" style={{ fontFamily: 'var(--font-sans, Inter, sans-serif)' }}>New College</h3>
+              <h3 className="text-sm font-semibold text-foreground" style={{ fontFamily: 'var(--font-sans)' }}>New College</h3>
               <input value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} placeholder="College name" className={inputClass} />
               <div className="grid grid-cols-2 gap-3">
                 <input value={form.city} onChange={(e) => setForm({...form, city: e.target.value})} placeholder="City" className={inputClass} />

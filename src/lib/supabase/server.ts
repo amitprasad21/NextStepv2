@@ -1,6 +1,11 @@
 import { createServerClient } from '@supabase/ssr'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
 
+/**
+ * Session-aware server client (uses anon key + user cookies).
+ * RLS is enforced — use for reading user-scoped data.
+ */
 export async function createClient() {
   const cookieStore = await cookies()
 
@@ -22,6 +27,27 @@ export async function createClient() {
             // This can be ignored if you have middleware refreshing sessions.
           }
         },
+      },
+    }
+  )
+}
+
+/**
+ * Service-role client — bypasses RLS entirely.
+ * Use ONLY for server-side privileged operations:
+ * - Creating user records in public.users
+ * - Creating notifications
+ * - Admin data mutations
+ * NEVER expose to client-side code.
+ */
+export function createServiceClient() {
+  return createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
       },
     }
   )

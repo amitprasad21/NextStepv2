@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { LogoutButton } from '@/components/layout/logout-button'
 
@@ -38,7 +38,7 @@ export default async function AdminLayout({
               <span className="text-xs font-bold text-primary-foreground">N</span>
             </div>
             <div>
-              <span className="text-sm font-bold text-foreground" style={{ fontFamily: 'var(--font-serif, Georgia, serif)' }}>
+              <span className="text-sm font-bold text-foreground" style={{ fontFamily: 'var(--font-serif)' }}>
                 NextStep
               </span>
               <span className="ml-1.5 rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary">Admin</span>

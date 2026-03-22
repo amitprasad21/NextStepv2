@@ -39,7 +39,7 @@ export function StatCounter({ end, suffix = '', prefix = '', label, duration = 2
       transition={{ duration: 0.5 }}
       className="text-center"
     >
-      <p className="text-4xl font-bold text-primary md:text-5xl" style={{ fontFamily: 'var(--font-serif, Georgia, serif)' }}>
+      <p className="text-4xl font-bold text-primary md:text-5xl" style={{ fontFamily: 'var(--font-serif)' }}>
         {prefix}{count.toLocaleString('en-IN')}{suffix}
       </p>
       <p className="mt-2 text-sm font-medium text-muted-foreground">{label}</p>

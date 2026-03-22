@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import { createBookingSchema } from '@/validators/booking'
 
@@ -10,10 +10,12 @@ export async function GET() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { data: dbUser } = await supabase.from('users').select('id').eq('auth_id', user.id).single()
+  const admin = createServiceClient()
+
+  const { data: dbUser } = await admin.from('users').select('id').eq('auth_id', user.id).single()
   if (!dbUser) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
-  const { data, error } = await supabase
+  const { data, error } = await admin
     .from('counselling_bookings')
     .select('*, slot:counselling_slots(*)')
     .eq('student_id', dbUser.id)
@@ -32,11 +34,13 @@ export async function POST(request: Request) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { data: dbUser } = await supabase.from('users').select('id').eq('auth_id', user.id).single()
+  const admin = createServiceClient()
+
+  const { data: dbUser } = await admin.from('users').select('id').eq('auth_id', user.id).single()
   if (!dbUser) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
   // Check is_complete
-  const { data: profile } = await supabase
+  const { data: profile } = await admin
     .from('student_profiles')
     .select('is_complete')
     .eq('user_id', dbUser.id)
@@ -55,7 +59,7 @@ export async function POST(request: Request) {
   const { slot_id, booking_type, context_college_id, preferred_date, preferred_time } = parsed.data
 
   // Check slot availability and capacity
-  const { data: slot } = await supabase
+  const { data: slot } = await admin
     .from('counselling_slots')
     .select('*')
     .eq('id', slot_id)
@@ -67,8 +71,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Slot not available.' }, { status: 409 })
   }
 
-  // Check duplicate (app-layer — DB partial unique index is the final guard)
-  const { data: existing } = await supabase
+  // Check duplicate
+  const { data: existing } = await admin
     .from('counselling_bookings')
     .select('id')
     .eq('student_id', dbUser.id)
@@ -83,8 +87,8 @@ export async function POST(request: Request) {
     )
   }
 
-  // Create booking + increment booked_count transactionally
-  const { data: booking, error: bookingError } = await supabase
+  // Create booking + increment booked_count
+  const { data: booking, error: bookingError } = await admin
     .from('counselling_bookings')
     .insert({
       student_id: dbUser.id,
@@ -107,15 +111,13 @@ export async function POST(request: Request) {
 
   // Update slot booked_count
   const newCount = slot.booked_count + 1
-  await supabase
+  await admin
     .from('counselling_slots')
     .update({
       booked_count: newCount,
       is_available: newCount < slot.max_capacity,
     })
     .eq('id', slot_id)
-
-  // NO notification dispatched here — per PRD
 
   return NextResponse.json({ data: booking }, { status: 201 })
 }

@@ -91,7 +91,7 @@ export default function SavedCollegesPage() {
               <path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
-          <h3 className="mt-4 text-lg font-semibold text-foreground" style={{ fontFamily: 'var(--font-sans, Inter, sans-serif)' }}>No saved colleges yet</h3>
+          <h3 className="mt-4 text-lg font-semibold text-foreground" style={{ fontFamily: 'var(--font-sans)' }}>No saved colleges yet</h3>
           <p className="mt-1 text-sm text-muted-foreground">Start exploring and save colleges you are interested in.</p>
           <Link
             href="/colleges"
@@ -120,7 +120,7 @@ export default function SavedCollegesPage() {
                     </svg>
                     {s.college?.city}, {s.college?.state}
                   </div>
-                  <h3 className="mt-2 text-lg font-semibold text-foreground transition-colors group-hover:text-primary" style={{ fontFamily: 'var(--font-sans, Inter, sans-serif)' }}>
+                  <h3 className="mt-2 text-lg font-semibold text-foreground transition-colors group-hover:text-primary" style={{ fontFamily: 'var(--font-sans)' }}>
                     {s.college?.name}
                   </h3>
                   {(s.college?.fee_min || s.college?.fee_max) && (

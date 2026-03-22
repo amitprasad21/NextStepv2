@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
 /**
@@ -9,10 +9,12 @@ export async function GET(request: Request) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
+  const admin = createServiceClient()
+
   const { searchParams } = new URL(request.url)
   const date = searchParams.get('date')
 
-  let query = supabase
+  let query = admin
     .from('counselling_slots')
     .select('*')
     .eq('is_available', true)

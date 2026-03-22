@@ -56,7 +56,7 @@ export function TestimonialCarousel() {
                 </div>
                 <blockquote
                   className="text-lg leading-relaxed text-foreground md:text-xl"
-                  style={{ fontFamily: 'var(--font-serif, Georgia, serif)' }}
+                  style={{ fontFamily: 'var(--font-serif)' }}
                 >
                   &ldquo;{t.quote}&rdquo;
                 </blockquote>

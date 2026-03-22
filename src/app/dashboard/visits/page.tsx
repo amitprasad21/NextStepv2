@@ -126,7 +126,7 @@ export default function VisitsPage() {
           animate={{ opacity: 1, height: 'auto' }}
           className="mt-5 overflow-hidden rounded-2xl border border-border/60 bg-card p-6 shadow-soft space-y-4"
         >
-          <h3 className="text-lg font-bold text-foreground" style={{ fontFamily: 'var(--font-sans, Inter, sans-serif)' }}>
+          <h3 className="text-lg font-bold text-foreground" style={{ fontFamily: 'var(--font-sans)' }}>
             Request a Campus Visit
           </h3>
           <div>
@@ -164,7 +164,7 @@ export default function VisitsPage() {
 
       {/* Visits list */}
       <div className="mt-8">
-        <h2 className="text-lg font-bold text-foreground" style={{ fontFamily: 'var(--font-sans, Inter, sans-serif)' }}>
+        <h2 className="text-lg font-bold text-foreground" style={{ fontFamily: 'var(--font-sans)' }}>
           Your Visit Requests
         </h2>
         {loading ? (

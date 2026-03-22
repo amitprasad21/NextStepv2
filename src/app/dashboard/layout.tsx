@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { LogoutButton } from '@/components/layout/logout-button'
 
@@ -13,14 +13,16 @@ export default async function DashboardLayout({
 
   if (!user) redirect('/auth/login')
 
-  const { data: dbUser } = await supabase
+  const admin = createServiceClient()
+
+  const { data: dbUser } = await admin
     .from('users')
     .select('id, email, role')
     .eq('auth_id', user.id)
     .single()
 
   const { data: profile } = dbUser
-    ? await supabase
+    ? await admin
         .from('student_profiles')
         .select('full_name')
         .eq('user_id', dbUser.id)
@@ -28,7 +30,7 @@ export default async function DashboardLayout({
     : { data: null }
 
   const { count: unreadCount } = dbUser
-    ? await supabase
+    ? await admin
         .from('notifications')
         .select('*', { count: 'exact', head: true })
         .eq('student_id', dbUser.id)
@@ -46,54 +48,63 @@ export default async function DashboardLayout({
     { href: '/dashboard/settings', label: 'Settings', icon: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z' },
   ]
 
+  const displayName = profile?.full_name || dbUser?.email?.split('@')[0] || 'User'
+  const initials = displayName.charAt(0).toUpperCase()
+
   return (
     <div className="flex min-h-screen flex-col">
       {/* Top nav */}
       <header className="sticky top-0 z-40 border-b bg-card/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary shadow-sm">
-              <span className="text-xs font-bold text-primary-foreground">N</span>
+          <Link href="/dashboard" className="flex items-center gap-2.5 group">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary shadow-md transition-transform duration-300 group-hover:scale-105">
+              <span className="text-sm font-bold text-primary-foreground">N</span>
             </div>
-            <span className="text-lg font-bold text-foreground" style={{ fontFamily: 'var(--font-serif, Georgia, serif)' }}>
+            <span className="text-lg font-bold text-foreground transition-colors" style={{ fontFamily: 'var(--font-serif)' }}>
               NextStep
             </span>
           </Link>
 
-          <nav className="hidden items-center gap-1 md:flex">
+          <nav className="hidden items-center gap-0.5 md:flex">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-all duration-200 hover:bg-accent hover:text-foreground"
+                className="group flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-muted-foreground transition-all duration-200 hover:bg-primary/5 hover:text-primary"
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="shrink-0">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="shrink-0 transition-colors group-hover:text-primary">
                   <path d={link.icon} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
                 {link.label}
+                {link.label === 'Notifications' && (unreadCount ?? 0) > 0 && (
+                  <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 text-[10px] font-bold text-white">
+                    {unreadCount}
+                  </span>
+                )}
               </Link>
             ))}
           </nav>
 
           <div className="flex items-center gap-3">
-            {/* Notification indicator */}
-            <Link href="/dashboard/notifications" className="relative flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
+            {/* Notification bell */}
+            <Link href="/dashboard/notifications" className="relative flex h-9 w-9 items-center justify-center rounded-xl text-muted-foreground transition-all duration-200 hover:bg-primary/5 hover:text-primary">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                 <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
               {(unreadCount ?? 0) > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-white">
+                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-white animate-pulse">
                   {unreadCount}
                 </span>
               )}
             </Link>
 
-            <div className="hidden items-center gap-2 rounded-lg bg-accent px-3 py-1.5 md:flex">
-              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
-                {(profile?.full_name || dbUser?.email || 'U').charAt(0).toUpperCase()}
+            {/* User pill */}
+            <div className="hidden items-center gap-2.5 rounded-xl border border-border/60 bg-accent/50 px-3.5 py-2 md:flex">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-violet-600 text-xs font-bold text-white shadow-sm">
+                {initials}
               </div>
-              <span className="text-sm font-medium text-foreground">
-                {profile?.full_name || dbUser?.email}
+              <span className="text-sm font-semibold text-foreground">
+                {displayName}
               </span>
             </div>
 
@@ -102,12 +113,12 @@ export default async function DashboardLayout({
         </div>
 
         {/* Mobile nav */}
-        <div className="flex items-center gap-1 overflow-x-auto border-t px-5 py-2 md:hidden">
+        <div className="flex items-center gap-1 overflow-x-auto border-t px-4 py-2 md:hidden">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-accent hover:text-foreground"
+              className="flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-primary/5 hover:text-primary"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                 <path d={link.icon} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -118,7 +129,7 @@ export default async function DashboardLayout({
         </div>
       </header>
 
-      <main className="flex-1 bg-muted">{children}</main>
+      <main className="flex-1 bg-muted/50">{children}</main>
     </div>
   )
 }

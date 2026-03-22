@@ -1,11 +1,10 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
 /**
  * POST /api/auth/ensure-user
  * Ensures a public.users record exists for the authenticated user.
- * Called after password-based sign-in to handle cases where
- * the user record wasn't created during the callback flow.
+ * Uses session client for auth, service client for DB writes (bypasses RLS).
  *
  * Returns: { role, isNew, isComplete }
  */
@@ -17,8 +16,10 @@ export async function POST() {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  const admin = createServiceClient()
+
   // Check if user record already exists
-  const { data: existing } = await supabase
+  const { data: existing } = await admin
     .from('users')
     .select('id, role')
     .eq('auth_id', user.id)
@@ -26,7 +27,7 @@ export async function POST() {
 
   if (existing) {
     // User exists — check profile completeness
-    const { data: profile } = await supabase
+    const { data: profile } = await admin
       .from('student_profiles')
       .select('is_complete')
       .eq('user_id', existing.id)
@@ -40,7 +41,7 @@ export async function POST() {
   }
 
   // New user — create record with role='student' (NEVER admin)
-  const { data: newUser, error: insertError } = await supabase
+  const { data: newUser, error: insertError } = await admin
     .from('users')
     .insert({
       auth_id: user.id,
@@ -52,9 +53,8 @@ export async function POST() {
     .single()
 
   if (insertError) {
-    // Handle race condition: record was created between our check and insert
     if (insertError.code === '23505') {
-      const { data: raceUser } = await supabase
+      const { data: raceUser } = await admin
         .from('users')
         .select('id, role')
         .eq('auth_id', user.id)
@@ -71,7 +71,7 @@ export async function POST() {
 
   // Send welcome notification
   if (newUser) {
-    await supabase.from('notifications').insert({
+    await admin.from('notifications').insert({
       student_id: newUser.id,
       type: 'welcome',
       channel: 'in_app',

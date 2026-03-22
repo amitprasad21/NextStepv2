@@ -64,7 +64,7 @@
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-surface-warm: var(--surface-warm);
-  --font-sans: var(--font-inter);
+  --font-sans: var(--font-sans);
   --font-serif: var(--font-serif);
 }
 
@@ -72,7 +72,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans, 'Inter', system-ui, sans-serif);
+  font-family: var(--font-sans, 'Plus Jakarta Sans', system-ui, sans-serif);
   letter-spacing: -0.011em;
   line-height: 1.6;
 }
@@ -83,33 +83,33 @@ body {
 
 /* ---- Typography ---- */
 h1, h2, h3, h4 {
-  font-family: var(--font-serif, 'DM Serif Display', Georgia, serif);
-  letter-spacing: -0.025em;
-  line-height: 1.2;
+  font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
 }
 
 /* ---- Smooth scrolling ---- */
-html {
+html[data-scroll-behavior="smooth"] {
   scroll-behavior: smooth;
 }
 
 /* ---- Custom scrollbar ---- */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--muted);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--muted-foreground);
-  border-radius: 4px;
+  background: var(--border);
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--foreground);
+  background: var(--muted-foreground);
 }
 
 /* ---- Selection ---- */
@@ -127,8 +127,8 @@ html {
 /* ---- Custom utilities ---- */
 .glass {
   background: var(--surface-glass);
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
 }
 
 .shadow-soft {
@@ -144,16 +144,61 @@ html {
 }
 
 .text-gradient {
-  background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 50%, var(--secondary) 100%);
+  background: linear-gradient(135deg, #818cf8 0%, #c084fc 40%, var(--secondary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
+/* ---- Button hover glow ---- */
+.btn-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-glow::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.btn-glow:hover::after {
+  opacity: 1;
+}
+
+/* ---- Card hover lift ---- */
+.card-hover {
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-elevation-medium);
+}
+
+/* ---- Stagger children animation ---- */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
 /* ---- Animations ---- */
 @keyframes float {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  50% { transform: translateY(-12px); }
 }
 
 @keyframes shimmer {
@@ -164,6 +209,11 @@ html {
 @keyframes pulse-glow {
   0%, 100% { box-shadow: 0 0 20px rgba(67, 56, 202, 0.15); }
   50% { box-shadow: 0 0 40px rgba(67, 56, 202, 0.3); }
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
 .animate-float {
@@ -177,6 +227,11 @@ html {
 
 .animate-pulse-glow {
   animation: pulse-glow 3s ease-in-out infinite;
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 5s ease infinite;
 }
 
 /* ---- Grain overlay for depth ---- */
@@ -199,4 +254,37 @@ html {
 .embla__slide {
   flex: 0 0 100%;
   min-width: 0;
+}
+
+/* ---- Interactive input ---- */
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):focus,
+select:focus,
+textarea:focus {
+  transform: translateY(-1px);
+}
+
+/* ---- Link underline animation ---- */
+.link-underline {
+  position: relative;
+}
+
+.link-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--primary);
+  transition: width 0.3s ease;
+}
+
+.link-underline:hover::after {
+  width: 100%;
 }

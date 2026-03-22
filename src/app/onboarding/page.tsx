@@ -121,7 +121,7 @@ export default function OnboardingPage() {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
               <span className="text-xs font-bold text-primary-foreground">N</span>
             </div>
-            <span className="text-lg font-bold text-foreground" style={{ fontFamily: 'var(--font-serif, Georgia, serif)' }}>
+            <span className="text-lg font-bold text-foreground" style={{ fontFamily: 'var(--font-serif)' }}>
               NextStep
             </span>
           </Link>
@@ -193,7 +193,7 @@ export default function OnboardingPage() {
                   className="space-y-5"
                 >
                   <div>
-                    <h2 className="text-xl font-bold text-foreground" style={{ fontFamily: 'var(--font-sans, Inter, sans-serif)' }}>
+                    <h2 className="text-xl font-bold text-foreground" style={{ fontFamily: 'var(--font-sans)' }}>
                       Personal Information
                     </h2>
                     <p className="mt-1 text-sm text-muted-foreground">Tell us a bit about yourself.</p>
@@ -241,7 +241,7 @@ export default function OnboardingPage() {
                   className="space-y-5"
                 >
                   <div>
-                    <h2 className="text-xl font-bold text-foreground" style={{ fontFamily: 'var(--font-sans, Inter, sans-serif)' }}>
+                    <h2 className="text-xl font-bold text-foreground" style={{ fontFamily: 'var(--font-sans)' }}>
                       Academic Information
                     </h2>
                     <p className="mt-1 text-sm text-muted-foreground">Your academic background helps us find the best fit.</p>
@@ -296,7 +296,7 @@ export default function OnboardingPage() {
                   className="space-y-5"
                 >
                   <div>
-                    <h2 className="text-xl font-bold text-foreground" style={{ fontFamily: 'var(--font-sans, Inter, sans-serif)' }}>
+                    <h2 className="text-xl font-bold text-foreground" style={{ fontFamily: 'var(--font-sans)' }}>
                       Course Preferences
                     </h2>
                     <p className="mt-1 text-sm text-muted-foreground">What are you looking to study?</p>

@@ -41,7 +41,10 @@
       "Bash(sed /^$/d)",
       "Read(//tmp/**)",
       "Bash(unzip -q \"C:\\\\Users\\\\Lenovo\\\\OneDrive\\\\Desktop\\\\files \\(1\\)\\\\NextStep_Architecture_v3_1_FINAL.docx\" -d arch_extract)",
-      "Bash(unzip -q \"C:\\\\Users\\\\Lenovo\\\\OneDrive\\\\Desktop\\\\files \\(1\\)\\\\NextStep_DBSchema_v3_1_FINAL.docx\" -d db_extract)"
+      "Bash(unzip -q \"C:\\\\Users\\\\Lenovo\\\\OneDrive\\\\Desktop\\\\files \\(1\\)\\\\NextStep_DBSchema_v3_1_FINAL.docx\" -d db_extract)",
+      "Bash(node scripts/make-admin.mjs \"shashwatsumanat49@gmail.com\" \"Shashwat@49\")",
+      "Bash(find src:*)",
+      "Bash(cmd /c \"taskkill /F /IM node.exe\")"
     ]
   }
 }
