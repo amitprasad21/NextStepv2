@@ -30,7 +30,9 @@ export async function GET(
 }
 
 /**
- * PATCH /api/admin/bookings/[id] — Update status. Validates transition. DISPATCHES notification.
+ * PATCH /api/admin/bookings/[id] — Update status and/or meeting link.
+ * Validates status transition only when status actually changes.
+ * Allows updating meeting_link without changing status.
  */
 export async function PATCH(
   request: Request,
@@ -64,19 +66,34 @@ export async function PATCH(
 
   if (!booking) return NextResponse.json({ error: 'Booking not found' }, { status: 404 })
 
-  // Validate status transition
   const currentStatus = booking.status as BookingStatus
   const newStatus = parsed.data.status
-  const valid = VALID_BOOKING_TRANSITIONS[currentStatus]
+  const isStatusChange = newStatus !== currentStatus
 
-  if (!valid.includes(newStatus)) {
-    return NextResponse.json({ error: 'Invalid status transition.' }, { status: 400 })
+  // Only validate transition if status is actually changing
+  if (isStatusChange) {
+    const valid = VALID_BOOKING_TRANSITIONS[currentStatus]
+    if (!valid.includes(newStatus)) {
+      return NextResponse.json({ error: 'Invalid status transition.' }, { status: 400 })
+    }
   }
 
-  const updateData: Record<string, unknown> = { status: newStatus }
+  const updateData: Record<string, unknown> = {}
+
+  // Only set status if it's changing
+  if (isStatusChange) {
+    updateData.status = newStatus
+  }
+
   if (parsed.data.admin_notes) updateData.admin_notes = parsed.data.admin_notes
   if (parsed.data.cancellation_reason) updateData.cancellation_reason = parsed.data.cancellation_reason
-  if (newStatus === 'confirmed' && adminUser) updateData.confirmed_by = adminUser.id
+  if (parsed.data.meeting_link !== undefined) updateData.meeting_link = parsed.data.meeting_link
+  if (isStatusChange && newStatus === 'confirmed' && adminUser) updateData.confirmed_by = adminUser.id
+
+  // Nothing to update
+  if (Object.keys(updateData).length === 0) {
+    return NextResponse.json({ data: booking })
+  }
 
   const { data: updated, error: dbError } = await supabase
     .from('counselling_bookings')
@@ -87,8 +104,8 @@ export async function PATCH(
 
   if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 })
 
-  // Dispatch notification on status change
-  if (newStatus !== currentStatus) {
+  // Dispatch notification only on actual status change
+  if (isStatusChange) {
     await dispatchNotifications(
       booking.student_id,
       `booking_${newStatus}` as 'booking_confirmed' | 'booking_cancelled' | 'booking_completed',

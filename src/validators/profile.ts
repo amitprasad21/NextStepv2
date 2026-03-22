@@ -11,6 +11,21 @@ export const profileSchema = z.object({
   desired_course: z.string().min(1, 'Desired course is required').max(100),
   desired_branch: z.string().max(100).nullable().optional(),
   stream: z.enum(['UG', 'PG']),
+  phone: z.string().max(15).nullable().optional(),
+  date_of_birth: z.string().nullable().optional(),
+  gender: z.enum(['male', 'female', 'other']).nullable().optional(),
+  parent_name: z.string().max(150).nullable().optional(),
+  parent_phone: z.string().max(15).nullable().optional(),
+  address: z.string().max(500).nullable().optional(),
+  pincode: z.string().max(10).nullable().optional(),
+  board_10th: z.string().max(100).nullable().optional(),
+  board_12th: z.string().max(100).nullable().optional(),
+  mht_cet_score: z.number().min(0).nullable().optional(),
+  neet_score: z.number().min(0).nullable().optional(),
+  other_exam_name: z.string().max(100).nullable().optional(),
+  other_exam_score: z.number().min(0).nullable().optional(),
+  budget_min: z.number().int().min(0).nullable().optional(),
+  budget_max: z.number().int().min(0).nullable().optional(),
 })
 
 export const profileUpdateSchema = profileSchema.partial()

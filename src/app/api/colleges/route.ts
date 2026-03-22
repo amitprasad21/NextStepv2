@@ -13,7 +13,10 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 })
   }
 
-  const { page, pageSize, city, state, stream, course, fee_min, fee_max, exam, search } = parsed.data
+  const {
+    page, pageSize, city, state, stream, course, fee_min, fee_max, exam, search,
+    college_type, has_hostel, has_scholarship, placement_min, sort_by, sort_order,
+  } = parsed.data
 
   const supabase = await createClient()
   let query = supabase
@@ -27,12 +30,12 @@ export async function GET(request: Request) {
   if (fee_min != null) query = query.gte('fee_min', fee_min)
   if (fee_max != null) query = query.lte('fee_max', fee_max)
   if (search) query = query.ilike('name', `%${search}%`)
+  if (college_type) query = query.eq('college_type', college_type)
+  if (has_hostel) query = query.eq('hostel_available', true)
+  if (has_scholarship) query = query.eq('scholarship', true)
+  if (placement_min != null) query = query.gte('placement_rate', placement_min)
 
-  // For stream/course/exam filters, we need to filter via college_courses
-  // These are handled post-fetch if stream, course, or exam are specified
-  // For MVP, we apply simple filters directly
   if (stream) {
-    // Get college IDs that have courses with this stream
     const { data: courseColleges } = await supabase
       .from('college_courses')
       .select('college_id')
@@ -74,12 +77,15 @@ export async function GET(request: Request) {
     }
   }
 
+  // Sorting
+  const orderCol = sort_by || 'created_at'
+  const ascending = sort_order === 'asc'
+  query = query.order(orderCol, { ascending })
+
   const from = (page - 1) * pageSize
   const to = from + pageSize - 1
 
-  const { data, count, error } = await query
-    .order('created_at', { ascending: false })
-    .range(from, to)
+  const { data, count, error } = await query.range(from, to)
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 })

@@ -1,8 +1,8 @@
 import Link from 'next/link'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { LogoutButton } from '@/components/layout/logout-button'
 import { NotificationBell } from '@/components/layout/notification-bell'
+import { ProfileDropdown } from '@/components/layout/profile-dropdown'
 
 export default async function DashboardLayout({
   children,
@@ -50,15 +50,16 @@ export default async function DashboardLayout({
 
   const displayName = profile?.full_name || dbUser?.email?.split('@')[0] || 'User'
   const initials = displayName.charAt(0).toUpperCase()
+  const email = dbUser?.email ?? ''
 
   return (
     <div className="flex min-h-screen flex-col">
       {/* Top nav */}
-      <header className="sticky top-0 z-40 border-b bg-card/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-40 border-b border-border/60 bg-card/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5">
           <Link href="/dashboard" className="flex items-center gap-2.5 group">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary shadow-md transition-transform duration-300 group-hover:scale-105">
-              <span className="text-sm font-bold text-primary-foreground">N</span>
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-dark shadow-md transition-transform duration-300 group-hover:scale-105">
+              <span className="text-sm font-bold text-primary-foreground tracking-tight">N</span>
             </div>
             <span className="text-lg font-bold text-foreground transition-colors" style={{ fontFamily: 'var(--font-serif)' }}>
               NextStep
@@ -76,16 +77,11 @@ export default async function DashboardLayout({
                   <path d={link.icon} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
                 {link.label}
-                {link.label === 'Notifications' && (unreadCount ?? 0) > 0 && (
-                  <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 text-[10px] font-bold text-white">
-                    {unreadCount}
-                  </span>
-                )}
               </Link>
             ))}
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             {/* Notification bell */}
             <Link href="/dashboard/notifications" className="relative flex h-9 w-9 items-center justify-center rounded-xl text-muted-foreground transition-all duration-200 hover:bg-primary/5 hover:text-primary">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -98,22 +94,17 @@ export default async function DashboardLayout({
               )}
             </Link>
 
-            {/* User pill */}
-            <div className="hidden items-center gap-2.5 rounded-xl border border-border/60 bg-accent/50 px-3.5 py-2 md:flex">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-violet-600 text-xs font-bold text-white shadow-sm">
-                {initials}
-              </div>
-              <span className="text-sm font-semibold text-foreground">
-                {displayName}
-              </span>
-            </div>
-
-            <LogoutButton />
+            {/* Profile dropdown */}
+            <ProfileDropdown
+              displayName={displayName}
+              email={email}
+              initials={initials}
+            />
           </div>
         </div>
 
         {/* Mobile nav */}
-        <div className="flex items-center gap-1 overflow-x-auto border-t px-4 py-2 md:hidden">
+        <div className="flex items-center gap-1 overflow-x-auto border-t border-border/40 px-4 py-2 md:hidden">
           {navLinks.map((link) => (
             <Link
               key={link.href}

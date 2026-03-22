@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
 import { CollegeCard } from '@/components/shared/college-card'
@@ -17,16 +17,48 @@ interface College {
   fee_max: number | null
   image_paths: string[]
   description: string | null
+  placement_rate: number | null
+  college_type: string | null
+  established_year: number | null
+  accreditation: string | null
+  hostel_available: boolean
+  scholarship: boolean
 }
+
+const INDIAN_STATES = [
+  'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
+  'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka',
+  'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram',
+  'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu',
+  'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal',
+  'Delhi', 'Jammu and Kashmir', 'Ladakh', 'Chandigarh', 'Puducherry',
+]
+
+const FEE_RANGES = [
+  { label: 'Under ₹1 Lakh', min: 0, max: 100000 },
+  { label: '₹1L – ₹3L', min: 100000, max: 300000 },
+  { label: '₹3L – ₹5L', min: 300000, max: 500000 },
+  { label: '₹5L – ₹10L', min: 500000, max: 1000000 },
+  { label: 'Above ₹10L', min: 1000000, max: undefined },
+]
 
 export default function CollegesPage() {
   const [colleges, setColleges] = useState<College[]>([])
   const [count, setCount] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [showFilters, setShowFilters] = useState(false)
   const [filters, setFilters] = useState({
     search: '',
     state: '',
     stream: '',
+    college_type: '',
+    fee_min: '' as string | number,
+    fee_max: '' as string | number,
+    has_hostel: false,
+    has_scholarship: false,
+    placement_min: '' as string | number,
+    sort_by: '',
+    sort_order: 'desc' as 'asc' | 'desc',
     page: 1,
   })
 
@@ -38,6 +70,16 @@ export default function CollegesPage() {
     if (filters.search) params.set('search', filters.search)
     if (filters.state) params.set('state', filters.state)
     if (filters.stream) params.set('stream', filters.stream)
+    if (filters.college_type) params.set('college_type', filters.college_type)
+    if (filters.fee_min !== '') params.set('fee_min', filters.fee_min.toString())
+    if (filters.fee_max !== '') params.set('fee_max', filters.fee_max.toString())
+    if (filters.has_hostel) params.set('has_hostel', 'true')
+    if (filters.has_scholarship) params.set('has_scholarship', 'true')
+    if (filters.placement_min !== '') params.set('placement_min', filters.placement_min.toString())
+    if (filters.sort_by) {
+      params.set('sort_by', filters.sort_by)
+      params.set('sort_order', filters.sort_order)
+    }
 
     const res = await fetch(`/api/colleges?${params}`)
     const data = await res.json()
@@ -48,13 +90,34 @@ export default function CollegesPage() {
 
   useEffect(() => {
     fetchColleges()
-  }, [filters.page, filters.state, filters.stream])
+  }, [filters.page])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     setFilters((f) => ({ ...f, page: 1 }))
     fetchColleges()
   }
+
+  const applyFeeRange = (min: number, max: number | undefined) => {
+    setFilters(f => ({ ...f, fee_min: min, fee_max: max ?? '', page: 1 }))
+  }
+
+  const clearFilters = () => {
+    setFilters({
+      search: '', state: '', stream: '', college_type: '',
+      fee_min: '', fee_max: '', has_hostel: false, has_scholarship: false,
+      placement_min: '', sort_by: '', sort_order: 'desc', page: 1,
+    })
+    setTimeout(fetchColleges, 0)
+  }
+
+  const activeFilterCount = [
+    filters.state, filters.stream, filters.college_type,
+    filters.fee_min !== '' ? 'fee' : '',
+    filters.has_hostel ? 'hostel' : '',
+    filters.has_scholarship ? 'scholarship' : '',
+    filters.placement_min !== '' ? 'placement' : '',
+  ].filter(Boolean).length
 
   const totalPages = Math.ceil(count / 20)
 
@@ -80,54 +143,41 @@ export default function CollegesPage() {
       </section>
 
       <div className="mx-auto w-full max-w-7xl px-5 py-8">
-        {/* Filters */}
-        <form onSubmit={handleSearch} className="flex flex-wrap items-end gap-3">
-          <div className="flex-1 min-w-[200px]">
-            <label className="block text-xs font-medium text-muted-foreground mb-1.5">Search</label>
-            <div className="relative">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground">
-                <path d="M14 14l-4-4m1.333-3.333a4.667 4.667 0 11-9.333 0 4.667 4.667 0 019.333 0z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-              </svg>
-              <input
-                type="text"
-                value={filters.search}
-                onChange={(e) => setFilters((f) => ({ ...f, search: e.target.value }))}
-                placeholder="Search by college name..."
-                className="w-full rounded-xl border border-border bg-card py-2.5 pl-10 pr-4 text-sm transition-all focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-              />
-            </div>
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-muted-foreground mb-1.5">Stream</label>
-            <select
-              value={filters.stream}
-              onChange={(e) => setFilters((f) => ({ ...f, stream: e.target.value, page: 1 }))}
-              className="rounded-xl border border-border bg-card px-4 py-2.5 text-sm transition-all focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-            >
-              <option value="">All Streams</option>
-              <option value="UG">UG</option>
-              <option value="PG">PG</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-muted-foreground mb-1.5">State</label>
+        {/* Search bar */}
+        <form onSubmit={handleSearch} className="flex gap-3">
+          <div className="flex-1 relative">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground">
+              <path d="M14 14l-4-4m1.333-3.333a4.667 4.667 0 11-9.333 0 4.667 4.667 0 019.333 0z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
             <input
               type="text"
-              value={filters.state}
-              onChange={(e) => setFilters((f) => ({ ...f, state: e.target.value }))}
-              placeholder="Filter by state..."
-              className="rounded-xl border border-border bg-card px-4 py-2.5 text-sm transition-all focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              value={filters.search}
+              onChange={(e) => setFilters((f) => ({ ...f, search: e.target.value }))}
+              placeholder="Search by college name..."
+              className="w-full rounded-xl border border-border bg-card py-3 pl-10 pr-4 text-sm transition-all focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
           </div>
-          <button
-            type="submit"
-            className="rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground shadow-md transition-all duration-300 hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0"
-          >
+          <button type="submit" className="rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-md transition-all hover:bg-primary/90 hover:-translate-y-0.5">
             Search
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowFilters(!showFilters)}
+            className={`relative flex items-center gap-2 rounded-xl border px-5 py-3 text-sm font-semibold transition-all ${
+              showFilters ? 'border-primary bg-primary/5 text-primary' : 'border-border text-foreground hover:bg-accent'
+            }`}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            Filters
+            {activeFilterCount > 0 && (
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white">{activeFilterCount}</span>
+            )}
           </button>
           <Link
             href="/colleges/compare"
-            className="flex items-center gap-2 rounded-xl border border-border px-5 py-2.5 text-sm font-semibold text-foreground transition-all hover:bg-accent hover:shadow-soft"
+            className="flex items-center gap-2 rounded-xl border border-border px-5 py-3 text-sm font-semibold text-foreground transition-all hover:bg-accent"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
               <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
@@ -135,6 +185,138 @@ export default function CollegesPage() {
             Compare
           </Link>
         </form>
+
+        {/* Filter Panel */}
+        <AnimatePresence>
+          {showFilters && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.25 }}
+              className="overflow-hidden"
+            >
+              <div className="mt-4 rounded-2xl border border-border/60 bg-card p-6 shadow-soft space-y-5">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-bold text-foreground" style={{ fontFamily: 'var(--font-sans)' }}>Filter Colleges</h3>
+                  <button onClick={clearFilters} className="text-xs font-medium text-primary hover:text-primary-dark transition-colors">Clear All</button>
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  {/* State */}
+                  <div>
+                    <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">State</label>
+                    <select
+                      value={filters.state}
+                      onChange={(e) => setFilters((f) => ({ ...f, state: e.target.value, page: 1 }))}
+                      className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    >
+                      <option value="">All States</option>
+                      {INDIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                  </div>
+
+                  {/* Stream */}
+                  <div>
+                    <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Stream</label>
+                    <select
+                      value={filters.stream}
+                      onChange={(e) => setFilters((f) => ({ ...f, stream: e.target.value, page: 1 }))}
+                      className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    >
+                      <option value="">All Streams</option>
+                      <option value="UG">Undergraduate (UG)</option>
+                      <option value="PG">Postgraduate (PG)</option>
+                    </select>
+                  </div>
+
+                  {/* College Type */}
+                  <div>
+                    <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">College Type</label>
+                    <select
+                      value={filters.college_type}
+                      onChange={(e) => setFilters((f) => ({ ...f, college_type: e.target.value, page: 1 }))}
+                      className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    >
+                      <option value="">All Types</option>
+                      <option value="government">Government</option>
+                      <option value="private">Private</option>
+                      <option value="deemed">Deemed</option>
+                      <option value="autonomous">Autonomous</option>
+                    </select>
+                  </div>
+
+                  {/* Sort */}
+                  <div>
+                    <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Sort By</label>
+                    <select
+                      value={filters.sort_by}
+                      onChange={(e) => setFilters((f) => ({ ...f, sort_by: e.target.value, page: 1 }))}
+                      className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    >
+                      <option value="">Newest First</option>
+                      <option value="name">Name (A-Z)</option>
+                      <option value="fee_min">Lowest Fees</option>
+                      <option value="placement_rate">Best Placement</option>
+                      <option value="established_year">Established Year</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Fee Range quick picks */}
+                <div>
+                  <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Fee Range</label>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={() => setFilters(f => ({ ...f, fee_min: '', fee_max: '', page: 1 }))}
+                      className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition-all ${
+                        filters.fee_min === '' && filters.fee_max === ''
+                          ? 'border-primary bg-primary/10 text-primary'
+                          : 'border-border text-muted-foreground hover:border-primary/30'
+                      }`}
+                    >All</button>
+                    {FEE_RANGES.map(r => (
+                      <button key={r.label} onClick={() => applyFeeRange(r.min, r.max)}
+                        className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition-all ${
+                          Number(filters.fee_min) === r.min && (r.max === undefined ? filters.fee_max === '' : Number(filters.fee_max) === r.max)
+                            ? 'border-primary bg-primary/10 text-primary'
+                            : 'border-border text-muted-foreground hover:border-primary/30'
+                        }`}
+                      >{r.label}</button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Min Placement Rate */}
+                <div className="flex flex-wrap items-end gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Min Placement Rate (%)</label>
+                    <input
+                      type="number" min="0" max="100"
+                      value={filters.placement_min}
+                      onChange={(e) => setFilters(f => ({ ...f, placement_min: e.target.value === '' ? '' : Number(e.target.value), page: 1 }))}
+                      placeholder="e.g. 70"
+                      className="w-32 rounded-xl border border-border bg-background px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    />
+                  </div>
+                  <label className="flex items-center gap-2 rounded-xl border border-border bg-background px-4 py-2.5 text-sm cursor-pointer hover:bg-accent transition-colors">
+                    <input type="checkbox" checked={filters.has_hostel} onChange={(e) => setFilters(f => ({ ...f, has_hostel: e.target.checked, page: 1 }))} className="h-4 w-4 rounded border-border text-primary accent-primary" />
+                    Hostel
+                  </label>
+                  <label className="flex items-center gap-2 rounded-xl border border-border bg-background px-4 py-2.5 text-sm cursor-pointer hover:bg-accent transition-colors">
+                    <input type="checkbox" checked={filters.has_scholarship} onChange={(e) => setFilters(f => ({ ...f, has_scholarship: e.target.checked, page: 1 }))} className="h-4 w-4 rounded border-border text-primary accent-primary" />
+                    Scholarship
+                  </label>
+                </div>
+
+                <button onClick={() => { setFilters(f => ({ ...f, page: 1 })); fetchColleges() }}
+                  className="rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground shadow-md transition-all hover:bg-primary/90 hover:-translate-y-0.5">
+                  Apply Filters
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Results */}
         {loading ? (
@@ -153,6 +335,7 @@ export default function CollegesPage() {
               </svg>
             </div>
             <p className="mt-4 text-muted-foreground">No colleges found matching your filters.</p>
+            <button onClick={clearFilters} className="mt-2 text-sm font-semibold text-primary hover:underline">Clear all filters</button>
           </div>
         ) : (
           <>
@@ -172,6 +355,9 @@ export default function CollegesPage() {
                   feeMin={c.fee_min}
                   feeMax={c.fee_max}
                   description={c.description}
+                  placementRate={c.placement_rate}
+                  collegeType={c.college_type}
+                  imagePaths={c.image_paths}
                   index={i}
                 />
               ))}

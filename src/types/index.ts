@@ -48,6 +48,21 @@ export interface StudentProfile {
   desired_branch: string | null
   stream: StreamType
   is_complete: boolean
+  phone: string | null
+  date_of_birth: string | null
+  gender: 'male' | 'female' | 'other' | null
+  parent_name: string | null
+  parent_phone: string | null
+  address: string | null
+  pincode: string | null
+  board_10th: string | null
+  board_12th: string | null
+  mht_cet_score: number | null
+  neet_score: number | null
+  other_exam_name: string | null
+  other_exam_score: number | null
+  budget_min: number | null
+  budget_max: number | null
   created_at: string
   updated_at: string
 }
@@ -76,6 +91,18 @@ export interface College {
   is_featured: boolean
   is_deleted: boolean
   created_by: string
+  established_year: number | null
+  website: string | null
+  accreditation: string | null
+  ranking: string | null
+  campus_size: string | null
+  placement_rate: number | null
+  avg_package: number | null
+  highest_package: number | null
+  facilities: string[]
+  hostel_available: boolean
+  scholarship: boolean
+  college_type: 'government' | 'private' | 'deemed' | 'autonomous'
   created_at: string
   updated_at: string
 }
@@ -118,6 +145,7 @@ export interface CounsellingBooking {
   admin_notes: string | null
   cancellation_reason: string | null
   confirmed_by: string | null
+  meeting_link: string | null
   created_at: string
   updated_at: string
 }

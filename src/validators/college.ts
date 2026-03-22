@@ -11,6 +11,18 @@ export const createCollegeSchema = z.object({
   is_featured: z.boolean().default(false),
   fee_min: z.number().int().min(0).nullable().optional(),
   fee_max: z.number().int().min(0).nullable().optional(),
+  established_year: z.number().int().min(1800).max(2030).nullable().optional(),
+  website: z.string().max(500).nullable().optional(),
+  accreditation: z.string().max(500).nullable().optional(),
+  ranking: z.string().max(500).nullable().optional(),
+  campus_size: z.string().max(200).nullable().optional(),
+  placement_rate: z.number().min(0).max(100).nullable().optional(),
+  avg_package: z.number().min(0).nullable().optional(),
+  highest_package: z.number().min(0).nullable().optional(),
+  facilities: z.array(z.string()).default([]),
+  hostel_available: z.boolean().default(false),
+  scholarship: z.boolean().default(false),
+  college_type: z.enum(['government', 'private', 'deemed', 'autonomous']).default('private'),
 })
 
 export const updateCollegeSchema = createCollegeSchema.partial()
@@ -37,6 +49,12 @@ export const collegeFiltersSchema = z.object({
   fee_max: z.coerce.number().int().nonnegative().optional(),
   exam: z.string().optional(),
   search: z.string().optional(),
+  college_type: z.enum(['government', 'private', 'deemed', 'autonomous']).optional(),
+  has_hostel: z.coerce.boolean().optional(),
+  has_scholarship: z.coerce.boolean().optional(),
+  placement_min: z.coerce.number().min(0).max(100).optional(),
+  sort_by: z.enum(['name', 'fee_min', 'placement_rate', 'established_year', 'created_at']).optional(),
+  sort_order: z.enum(['asc', 'desc']).default('desc'),
 })
 
 export type CreateCollegeInput = z.infer<typeof createCollegeSchema>

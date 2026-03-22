@@ -80,9 +80,11 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans, 'DM Sans', system-ui, sans-serif);
+  font-family: var(--font-sans, 'Inter', system-ui, sans-serif);
   letter-spacing: -0.011em;
   line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 * {
@@ -91,9 +93,10 @@ body {
 
 /* ---- Typography ---- */
 h1, h2, h3, h4 {
-  font-family: var(--font-serif, 'Cormorant Garamond', Georgia, serif);
+  font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
   letter-spacing: -0.02em;
-  line-height: 1.15;
+  line-height: 1.2;
+  font-weight: 700;
 }
 
 /* ---- Smooth scrolling ---- */
