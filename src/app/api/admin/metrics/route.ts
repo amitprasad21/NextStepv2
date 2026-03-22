@@ -1,0 +1,47 @@
+import { NextResponse } from 'next/server'
+import { verifyAdmin } from '@/lib/auth/verify-admin'
+import { createClient } from '@/lib/supabase/server'
+
+/**
+ * GET /api/admin/metrics — Dashboard metrics.
+ */
+export async function GET() {
+  const { error } = await verifyAdmin()
+  if (error) return error
+
+  const supabase = await createClient()
+
+  const [students, bookings, visits, colleges] = await Promise.all([
+    supabase.from('users').select('*', { count: 'exact', head: true }).eq('role', 'student'),
+    supabase.from('counselling_bookings').select('status'),
+    supabase.from('college_visits').select('status'),
+    supabase.from('colleges').select('*', { count: 'exact', head: true }).eq('is_deleted', false),
+  ])
+
+  const bookingsByStatus = {
+    pending: 0, confirmed: 0, completed: 0, cancelled: 0,
+  }
+  bookings.data?.forEach((b) => {
+    const s = b.status as keyof typeof bookingsByStatus
+    if (s in bookingsByStatus) bookingsByStatus[s]++
+  })
+
+  const visitsByStatus = {
+    pending: 0, confirmed: 0, completed: 0, cancelled: 0,
+  }
+  visits.data?.forEach((v) => {
+    const s = v.status as keyof typeof visitsByStatus
+    if (s in visitsByStatus) visitsByStatus[s]++
+  })
+
+  return NextResponse.json({
+    data: {
+      totalStudents: students.count ?? 0,
+      totalColleges: colleges.count ?? 0,
+      bookingsByStatus,
+      visitsByStatus,
+      totalBookings: bookings.data?.length ?? 0,
+      totalVisits: visits.data?.length ?? 0,
+    },
+  })
+}

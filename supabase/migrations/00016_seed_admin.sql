@@ -1,0 +1,20 @@
+-- Migration 00016: Admin provisioning script (TEMPLATE)
+-- ============================================================
+-- HOW TO PROVISION AN ADMIN:
+-- ============================================================
+-- Step 1: Create Supabase Auth user via dashboard. Copy the UID.
+-- Step 2: Run the following SQL (replace placeholders):
+--
+-- INSERT INTO public.users (auth_id, email, role, is_verified)
+-- VALUES ('<supabase-auth-uid>', 'admin@nextstep.in', 'admin', true)
+-- RETURNING id;
+--
+-- Step 3: Use the id returned above:
+--
+-- INSERT INTO public.admin_users (user_id, full_name, email)
+-- VALUES ('<users.id-from-above>', 'Admin Name', 'admin@nextstep.in');
+--
+-- ============================================================
+-- IMPORTANT: No API route can set role='admin'.
+-- Only this DB script can provision admin accounts.
+-- ============================================================
