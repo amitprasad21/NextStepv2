@@ -17,6 +17,19 @@ interface CollegeWithCourses {
   fee_min: number | null
   fee_max: number | null
   daily_visit_capacity: number
+  placement_rate: number | null
+  avg_package: number | null
+  highest_package: number | null
+  hostel_available: boolean
+  scholarship: boolean
+  accreditation: string | null
+  college_type: string | null
+  ranking: number | null
+  campus_size: string | null
+  established_year: number | null
+  website: string | null
+  facilities: string[]
+  image_paths: string[]
   college_courses: Array<{
     id: string
     course_name: string
@@ -585,6 +598,127 @@ function ComparePageContent() {
                         /year
                       </span>
                     </span>
+                  ),
+                },
+                {
+                  label: 'College Type',
+                  render: (c: CollegeWithCourses) => (
+                    <span className="text-sm text-foreground capitalize">
+                      {c.college_type ?? '—'}
+                    </span>
+                  ),
+                },
+                {
+                  label: 'Established',
+                  render: (c: CollegeWithCourses) => (
+                    <span className="text-sm text-foreground">
+                      {c.established_year ?? '—'}
+                    </span>
+                  ),
+                },
+                {
+                  label: 'Accreditation',
+                  render: (c: CollegeWithCourses) => (
+                    <span className="text-sm font-medium text-foreground">
+                      {c.accreditation ?? '—'}
+                    </span>
+                  ),
+                },
+                {
+                  label: 'Ranking',
+                  render: (c: CollegeWithCourses) => (
+                    <span className="text-sm text-foreground">
+                      {c.ranking ? `#${c.ranking}` : '—'}
+                    </span>
+                  ),
+                },
+                {
+                  label: 'Placement Rate',
+                  render: (c: CollegeWithCourses) => (
+                    <span className="text-sm font-semibold text-primary">
+                      {c.placement_rate != null ? `${c.placement_rate}%` : '—'}
+                    </span>
+                  ),
+                },
+                {
+                  label: 'Avg Package',
+                  render: (c: CollegeWithCourses) => (
+                    <span className="text-sm font-semibold text-foreground">
+                      {c.avg_package != null
+                        ? `₹${(c.avg_package / 100000).toFixed(1)} LPA`
+                        : '—'}
+                    </span>
+                  ),
+                },
+                {
+                  label: 'Highest Package',
+                  render: (c: CollegeWithCourses) => (
+                    <span className="text-sm font-semibold text-foreground">
+                      {c.highest_package != null
+                        ? `₹${(c.highest_package / 100000).toFixed(1)} LPA`
+                        : '—'}
+                    </span>
+                  ),
+                },
+                {
+                  label: 'Hostel',
+                  render: (c: CollegeWithCourses) => (
+                    <div className="flex items-center gap-1.5">
+                      {c.hostel_available ? (
+                        <>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-green-600"><path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                          <span className="text-sm text-green-700 font-medium">Available</span>
+                        </>
+                      ) : (
+                        <>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-red-500"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+                          <span className="text-sm text-muted-foreground">Not available</span>
+                        </>
+                      )}
+                    </div>
+                  ),
+                },
+                {
+                  label: 'Scholarship',
+                  render: (c: CollegeWithCourses) => (
+                    <div className="flex items-center gap-1.5">
+                      {c.scholarship ? (
+                        <>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-green-600"><path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                          <span className="text-sm text-green-700 font-medium">Available</span>
+                        </>
+                      ) : (
+                        <>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-red-500"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+                          <span className="text-sm text-muted-foreground">Not available</span>
+                        </>
+                      )}
+                    </div>
+                  ),
+                },
+                {
+                  label: 'Campus Size',
+                  render: (c: CollegeWithCourses) => (
+                    <span className="text-sm text-foreground">
+                      {c.campus_size ?? '—'}
+                    </span>
+                  ),
+                },
+                {
+                  label: 'Facilities',
+                  render: (c: CollegeWithCourses) => (
+                    c.facilities?.length > 0 ? (
+                      <div className="flex flex-wrap gap-1">
+                        {c.facilities.slice(0, 5).map(f => (
+                          <span key={f} className="rounded-md bg-muted px-1.5 py-0.5 text-[11px] text-muted-foreground">{f}</span>
+                        ))}
+                        {c.facilities.length > 5 && (
+                          <span className="rounded-md bg-muted px-1.5 py-0.5 text-[11px] text-muted-foreground">+{c.facilities.length - 5} more</span>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-xs text-muted-foreground/50">—</span>
+                    )
                   ),
                 },
                 {

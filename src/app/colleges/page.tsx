@@ -358,6 +358,10 @@ export default function CollegesPage() {
                   placementRate={c.placement_rate}
                   collegeType={c.college_type}
                   imagePaths={c.image_paths}
+                  establishedYear={c.established_year}
+                  accreditation={c.accreditation}
+                  hostelAvailable={c.hostel_available}
+                  scholarship={c.scholarship}
                   index={i}
                 />
               ))}

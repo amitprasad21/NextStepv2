@@ -28,11 +28,8 @@ export async function GET() {
     return NextResponse.json({
       status: 'ok',
       db: 'connected',
-      userCount: count ?? 0,
       latencyMs,
       timestamp: new Date().toISOString(),
-      version: process.env.npm_package_version ?? '0.1.0',
-      environment: process.env.NODE_ENV,
     })
   } catch (err) {
     const latencyMs = Date.now() - start

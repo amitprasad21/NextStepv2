@@ -90,26 +90,13 @@ export default async function DashboardPage() {
   return (
     <div className="mx-auto max-w-6xl px-5 py-8">
       {/* Welcome header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground sm:text-3xl" style={{ fontFamily: 'var(--font-sans)' }}>
-            Welcome back, {profile?.full_name ?? 'Student'}
-          </h1>
-          <p className="mt-1 text-muted-foreground">
-            Here&apos;s an overview of your activity and next steps.
-          </p>
-        </div>
-        {profile && (
-          <div className="hidden md:flex items-center gap-2 rounded-xl border border-border/60 bg-card px-4 py-2.5 shadow-soft">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary-dark text-xs font-bold text-white">
-              {(profile.full_name ?? 'S').charAt(0).toUpperCase()}
-            </div>
-            <div>
-              <p className="text-xs font-semibold text-foreground">{profile.full_name}</p>
-              <p className="text-[10px] text-muted-foreground">{profile.desired_course} &middot; {profile.stream} &middot; {profile.city}</p>
-            </div>
-          </div>
-        )}
+      <div>
+        <h1 className="text-2xl font-bold text-foreground sm:text-3xl" style={{ fontFamily: 'var(--font-sans)' }}>
+          Welcome back, {profile?.full_name ?? 'Student'}
+        </h1>
+        <p className="mt-1 text-muted-foreground">
+          Here&apos;s an overview of your activity and next steps.
+        </p>
       </div>
 
       {/* Profile completion banner */}
@@ -185,11 +172,11 @@ export default async function DashboardPage() {
           ) : (
             <div className="mt-4 space-y-2">
               {bookings.map((b) => {
-                const bStatus = b.status as string
-                const bType = b.booking_type as string
-                const bDate = b.preferred_date as string
-                const bTime = b.preferred_time as string
-                const bLink = (b as Record<string, unknown>).meeting_link as string | null
+                const bStatus = String(b.status ?? 'pending')
+                const bType = String(b.booking_type ?? '')
+                const bDate = String(b.preferred_date ?? '')
+                const bTime = String(b.preferred_time ?? '')
+                const bLink = b.meeting_link ? String(b.meeting_link) : null
                 return (
                   <div key={b.id} className="rounded-xl border border-border/40 bg-muted/30 p-4 transition-colors hover:bg-muted/60">
                     <div className="flex items-center justify-between">

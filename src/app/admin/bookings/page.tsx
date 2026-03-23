@@ -11,7 +11,7 @@ interface Booking {
   preferred_time: string
   created_at: string
   meeting_link: string | null
-  student: { id: string; email: string }
+  student: { id: string; email: string; student_profiles: { full_name: string }[] | null }
   slot: { slot_date: string; slot_time: string }
 }
 
@@ -34,11 +34,16 @@ export default function AdminBookingsPage() {
 
   const fetchBookings = async () => {
     setLoading(true)
-    const params = filter ? `?status=${filter}` : ''
-    const res = await fetch(`/api/admin/bookings${params}`)
-    const data = await res.json()
-    setBookings(data.data ?? [])
-    setLoading(false)
+    try {
+      const params = filter ? `?status=${filter}` : ''
+      const res = await fetch(`/api/admin/bookings${params}`)
+      const data = await res.json()
+      setBookings(data.data ?? [])
+    } catch {
+      // network error — keep existing state
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -126,10 +131,15 @@ export default function AdminBookingsPage() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3">
                     <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-sm font-bold text-primary shrink-0">
-                      {(b.student?.email || 'S').charAt(0).toUpperCase()}
+                      {(b.student?.student_profiles?.[0]?.full_name || b.student?.email || 'S').charAt(0).toUpperCase()}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-sm font-semibold text-foreground truncate">{b.student?.email}</p>
+                      <p className="text-sm font-semibold text-foreground truncate">
+                        {b.student?.student_profiles?.[0]?.full_name || b.student?.email}
+                      </p>
+                      {b.student?.student_profiles?.[0]?.full_name && (
+                        <p className="text-[11px] text-muted-foreground truncate">{b.student?.email}</p>
+                      )}
                       <p className="text-xs text-muted-foreground">
                         {b.preferred_date} at {b.preferred_time} &middot; Booked {new Date(b.created_at).toLocaleDateString('en-IN')}
                       </p>

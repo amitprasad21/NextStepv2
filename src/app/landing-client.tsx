@@ -21,6 +21,12 @@ interface FeaturedCollege {
   fee_min: number | null
   fee_max: number | null
   description: string | null
+  placement_rate: number | null
+  college_type: string | null
+  established_year: number | null
+  accreditation: string | null
+  hostel_available: boolean
+  scholarship: boolean
 }
 
 export function LandingClient({ colleges }: { colleges: FeaturedCollege[] }) {
@@ -415,6 +421,13 @@ export function LandingClient({ colleges }: { colleges: FeaturedCollege[] }) {
                   feeMin={college.fee_min}
                   feeMax={college.fee_max}
                   description={college.description}
+                  placementRate={college.placement_rate}
+                  collegeType={college.college_type}
+                  imagePaths={college.image_paths}
+                  establishedYear={college.established_year}
+                  accreditation={college.accreditation}
+                  hostelAvailable={college.hostel_available}
+                  scholarship={college.scholarship}
                   index={i}
                 />
               ))}

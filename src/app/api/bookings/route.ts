@@ -87,7 +87,23 @@ export async function POST(request: Request) {
     )
   }
 
-  // Create booking + increment booked_count
+  // Atomically increment booked_count only if capacity not exceeded
+  const { data: updatedSlot, error: slotError } = await admin
+    .from('counselling_slots')
+    .update({
+      booked_count: slot.booked_count + 1,
+      is_available: slot.booked_count + 1 < slot.max_capacity,
+    })
+    .eq('id', slot_id)
+    .lt('booked_count', slot.max_capacity)
+    .select()
+    .single()
+
+  if (slotError || !updatedSlot) {
+    return NextResponse.json({ error: 'Slot is no longer available.' }, { status: 409 })
+  }
+
+  // Create booking
   const { data: booking, error: bookingError } = await admin
     .from('counselling_bookings')
     .insert({
@@ -103,21 +119,20 @@ export async function POST(request: Request) {
     .single()
 
   if (bookingError) {
+    // Rollback slot count on failure
+    await admin
+      .from('counselling_slots')
+      .update({
+        booked_count: updatedSlot.booked_count - 1,
+        is_available: true,
+      })
+      .eq('id', slot_id)
+
     if (bookingError.code === '23505') {
       return NextResponse.json({ error: 'You already have a booking at this time.' }, { status: 409 })
     }
     return NextResponse.json({ error: bookingError.message }, { status: 500 })
   }
-
-  // Update slot booked_count
-  const newCount = slot.booked_count + 1
-  await admin
-    .from('counselling_slots')
-    .update({
-      booked_count: newCount,
-      is_available: newCount < slot.max_capacity,
-    })
-    .eq('id', slot_id)
 
   return NextResponse.json({ data: booking }, { status: 201 })
 }

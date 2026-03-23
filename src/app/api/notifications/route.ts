@@ -23,6 +23,7 @@ export async function GET(request: Request) {
     .eq('student_id', dbUser.id)
     .eq('channel', 'in_app')
     .order('created_at', { ascending: false })
+    .limit(50)
 
   if (unreadOnly) {
     query = query.eq('is_read', false)

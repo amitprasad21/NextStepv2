@@ -17,7 +17,7 @@ export async function GET(request: Request) {
   const supabase = createServiceClient()
   let query = supabase
     .from('counselling_bookings')
-    .select('*, student:users(id, email), slot:counselling_slots(slot_date, slot_time)', { count: 'exact' })
+    .select('*, student:users(id, email, student_profiles(full_name)), slot:counselling_slots(slot_date, slot_time)', { count: 'exact' })
 
   if (status) query = query.eq('status', status)
 

@@ -12,7 +12,7 @@ export const updateBookingStatusSchema = z.object({
   status: z.enum(['confirmed', 'completed', 'cancelled']),
   admin_notes: z.string().max(1000).optional(),
   cancellation_reason: z.string().max(500).optional(),
-  meeting_link: z.string().max(1000).optional(),
+  meeting_link: z.string().url('Must be a valid URL').max(1000).optional(),
 })
 
 export type CreateBookingInput = z.infer<typeof createBookingSchema>

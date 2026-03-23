@@ -52,16 +52,25 @@ export default function VisitsPage() {
   const [messageType, setMessageType] = useState<'success' | 'error'>('success')
 
   const fetchVisits = async () => {
-    const res = await fetch('/api/visits')
-    const data = await res.json()
-    setVisits(data.data ?? [])
-    setLoading(false)
+    try {
+      const res = await fetch('/api/visits')
+      const data = await res.json()
+      setVisits(data.data ?? [])
+    } catch {
+      // network error — keep existing state
+    } finally {
+      setLoading(false)
+    }
   }
 
   const fetchColleges = async () => {
-    const res = await fetch('/api/colleges?pageSize=50')
-    const data = await res.json()
-    setColleges(data.data ?? [])
+    try {
+      const res = await fetch('/api/colleges?pageSize=50')
+      const data = await res.json()
+      setColleges(data.data ?? [])
+    } catch {
+      // network error
+    }
   }
 
   useEffect(() => {
