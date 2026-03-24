@@ -35,6 +35,7 @@ export default function OnboardingPage() {
 
   const [form, setForm] = useState({
     full_name: '',
+    phone: '',
     city: '',
     state: '',
     marks_10th: '',
@@ -61,12 +62,13 @@ export default function OnboardingPage() {
 
     const payload = {
       full_name: form.full_name,
+      phone: form.phone,
       city: form.city,
       state: form.state,
       marks_10th: parseFloat(form.marks_10th),
-      marks_12th: form.marks_12th ? parseFloat(form.marks_12th) : null,
+      marks_12th: parseFloat(form.marks_12th),
       appearing_12th: form.appearing_12th,
-      jee_rank: form.jee_rank ? parseInt(form.jee_rank) : null,
+      jee_rank: parseInt(form.jee_rank),
       desired_course: form.desired_course,
       desired_branch: form.desired_branch || null,
       stream: form.stream,
@@ -202,6 +204,10 @@ export default function OnboardingPage() {
                     <label className="block text-sm font-medium text-foreground">Full Name <span className="text-destructive">*</span></label>
                     <input type="text" value={form.full_name} onChange={(e) => update('full_name', e.target.value)} className={inputClass} placeholder="Your full name" />
                   </div>
+                  <div>
+                    <label className="block text-sm font-medium text-foreground">Phone Number <span className="text-destructive">*</span></label>
+                    <input type="tel" value={form.phone} onChange={(e) => update('phone', e.target.value.replace(/[^0-9+]/g, ''))} className={inputClass} placeholder="e.g., 9876543210" maxLength={15} />
+                  </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-foreground">City <span className="text-destructive">*</span></label>
@@ -218,7 +224,8 @@ export default function OnboardingPage() {
                   <button
                     type="button"
                     onClick={() => {
-                      if (!form.full_name || !form.city || !form.state) { setError('Please fill in all required fields'); return }
+                      if (!form.full_name || !form.phone || !form.city || !form.state) { setError('Please fill in all required fields'); return }
+                      if (form.phone.replace(/\D/g, '').length < 10) { setError('Phone number must be at least 10 digits'); return }
                       setError(''); goTo(2)
                     }}
                     className="w-full rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground shadow-md transition-all duration-300 hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0"
@@ -250,18 +257,19 @@ export default function OnboardingPage() {
                     <label className="block text-sm font-medium text-foreground">10th Marks (%) <span className="text-destructive">*</span></label>
                     <input type="number" step="0.01" min="0" max="100" value={form.marks_10th} onChange={(e) => update('marks_10th', e.target.value)} className={inputClass} placeholder="e.g., 92.5" />
                   </div>
-                  <div className="flex items-center gap-3 rounded-xl border border-border bg-accent/50 p-4">
-                    <input type="checkbox" id="appearing_12th" checked={form.appearing_12th} onChange={(e) => update('appearing_12th', e.target.checked)} className="h-4 w-4 rounded border-border text-primary accent-primary" />
-                    <label htmlFor="appearing_12th" className="text-sm text-foreground">Currently appearing for 12th</label>
-                  </div>
-                  {!form.appearing_12th && (
-                    <div>
-                      <label className="block text-sm font-medium text-foreground">12th Marks (%)</label>
-                      <input type="number" step="0.01" min="0" max="100" value={form.marks_12th} onChange={(e) => update('marks_12th', e.target.value)} className={inputClass} placeholder="e.g., 88.0" />
-                    </div>
-                  )}
                   <div>
-                    <label className="block text-sm font-medium text-foreground">JEE Rank <span className="text-muted-foreground text-xs">(optional)</span></label>
+                    <label className="block text-sm font-medium text-foreground">12th Marks (%) <span className="text-destructive">*</span></label>
+                    <div className="flex items-center gap-3 mt-1">
+                      <input type="checkbox" id="appearing_12th" checked={form.appearing_12th} onChange={(e) => update('appearing_12th', e.target.checked)} className="h-4 w-4 rounded border-border text-primary accent-primary shrink-0" />
+                      <label htmlFor="appearing_12th" className="text-xs text-muted-foreground">Currently appearing for 12th</label>
+                    </div>
+                    <input type="number" step="0.01" min="0" max="100" value={form.marks_12th} onChange={(e) => update('marks_12th', e.target.value)} className={inputClass} placeholder={form.appearing_12th ? 'Enter expected marks' : 'e.g., 88.0'} />
+                    {form.appearing_12th && (
+                      <p className="mt-1 text-[10px] text-muted-foreground">Enter your expected/predicted marks</p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-foreground">JEE Rank <span className="text-destructive">*</span></label>
                     <input type="number" min="1" value={form.jee_rank} onChange={(e) => update('jee_rank', e.target.value)} className={inputClass} placeholder="e.g., 15000" />
                   </div>
                   <div className="flex gap-3">
@@ -272,7 +280,8 @@ export default function OnboardingPage() {
                       type="button"
                       onClick={() => {
                         if (!form.marks_10th) { setError('10th marks are required'); return }
-                        if (!form.appearing_12th && !form.marks_12th) { setError('12th marks required unless currently appearing'); return }
+                        if (!form.marks_12th) { setError('12th marks are required'); return }
+                        if (!form.jee_rank) { setError('JEE rank is required'); return }
                         setError(''); goTo(3)
                       }}
                       className="flex-1 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground shadow-md transition-all duration-300 hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0"

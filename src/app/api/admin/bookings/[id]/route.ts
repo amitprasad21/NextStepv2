@@ -57,6 +57,8 @@ export async function PATCH(
     .eq('user_id', adminDbId)
     .single()
 
+  if (!adminUser) return NextResponse.json({ error: 'Admin record not found' }, { status: 500 })
+
   // Fetch current booking
   const { data: booking } = await supabase
     .from('counselling_bookings')

@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -26,26 +25,15 @@ export default function SavedCollegesPage() {
   const [loading, setLoading] = useState(true)
 
   const fetchSaved = async () => {
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
-
-    const { data: dbUser } = await supabase
-      .from('users')
-      .select('id')
-      .eq('auth_id', user.id)
-      .single()
-
-    if (!dbUser) return
-
-    const { data } = await supabase
-      .from('saved_colleges')
-      .select('id, college_id, college:colleges(id, name, city, state, fee_min, fee_max, image_paths, college_type, placement_rate)')
-      .eq('student_id', dbUser.id)
-      .order('saved_at', { ascending: false })
-
-    setSaved((data as unknown as SavedCollege[]) ?? [])
-    setLoading(false)
+    try {
+      const res = await fetch('/api/saved')
+      const data = await res.json()
+      setSaved(data.data ?? [])
+    } catch {
+      // network error
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleRemove = async (collegeId: string) => {

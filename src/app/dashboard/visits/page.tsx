@@ -106,9 +106,13 @@ export default function VisitsPage() {
     setSubmitting(false)
   }
 
-  const tomorrow = new Date()
-  tomorrow.setDate(tomorrow.getDate() + 1)
-  const minDate = tomorrow.toISOString().split('T')[0]
+  const [minDate, setMinDate] = useState('')
+
+  useEffect(() => {
+    const tomorrow = new Date()
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    setMinDate(tomorrow.toISOString().split('T')[0])
+  }, [])
 
   const getCollegeName = (id: string) => colleges.find(c => c.id === id)?.name ?? 'College'
 

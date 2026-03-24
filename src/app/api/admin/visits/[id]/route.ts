@@ -31,6 +31,8 @@ export async function PATCH(
     .eq('user_id', adminDbId)
     .single()
 
+  if (!adminUser) return NextResponse.json({ error: 'Admin record not found' }, { status: 500 })
+
   const { data: visit } = await supabase
     .from('college_visits')
     .select('*')

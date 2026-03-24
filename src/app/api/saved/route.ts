@@ -24,7 +24,7 @@ export async function GET() {
 
   const { data, error } = await admin
     .from('saved_colleges')
-    .select('*, college:colleges(id, name, city, state, fee_min, fee_max)')
+    .select('id, college_id, college:colleges(id, name, city, state, fee_min, fee_max, image_paths, college_type, placement_rate)')
     .eq('student_id', dbUser.id)
     .order('saved_at', { ascending: false })
 

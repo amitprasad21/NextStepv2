@@ -137,6 +137,12 @@ export default function BookingsPage() {
 
   const dateEntries = Object.entries(slotsByDate).slice(0, 7)
 
+  const [todayStr, setTodayStr] = useState('')
+
+  useEffect(() => {
+    setTodayStr(new Date().toISOString().split('T')[0])
+  }, [])
+
   const formatDate = (date: string) =>
     new Date(date + 'T00:00:00').toLocaleDateString('en-IN', { weekday: 'short', month: 'short', day: 'numeric' })
 
@@ -149,11 +155,7 @@ export default function BookingsPage() {
   const formatMonth = (date: string) =>
     new Date(date + 'T00:00:00').toLocaleDateString('en-IN', { month: 'short' })
 
-  const isToday = (date: string) => {
-    const d = new Date(date + 'T00:00:00')
-    const now = new Date()
-    return d.toDateString() === now.toDateString()
-  }
+  const isToday = (date: string) => date === todayStr
 
   const selectedDateSlots = selectedDate ? slotsByDate[selectedDate] ?? [] : []
 
