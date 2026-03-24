@@ -50,7 +50,7 @@ function LoginContent() {
       } else if (result.isNew || !result.isComplete) {
         router.push('/onboarding')
       } else {
-        router.push('/dashboard')
+        router.push('/')
       }
     }
 

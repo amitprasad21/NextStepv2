@@ -64,7 +64,7 @@ export function Navbar({
       >
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5">
           <Link
-            href={user ? '/dashboard' : '/'}
+            href="/"
             className="flex items-center gap-2.5 transition-transform duration-300 hover:scale-[1.02]"
           >
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-dark shadow-md">

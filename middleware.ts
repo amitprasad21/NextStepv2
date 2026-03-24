@@ -47,7 +47,7 @@ export async function middleware(request: NextRequest) {
     if (data?.role === 'admin') {
       return NextResponse.redirect(new URL('/admin', request.url))
     }
-    return NextResponse.redirect(new URL('/dashboard', request.url))
+    return NextResponse.redirect(new URL('/', request.url))
   }
 
   // ---- Admin route protection: verify role from DB — NEVER from user_metadata ----
