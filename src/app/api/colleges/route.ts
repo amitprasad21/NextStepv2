@@ -19,9 +19,14 @@ export async function GET(request: Request) {
   } = parsed.data
 
   const supabase = await createClient()
+  
+  const selectQuery = (stream || course || exam) 
+    ? '*, college_courses!inner(*)' 
+    : '*, college_courses(*)';
+
   let query = supabase
     .from('colleges')
-    .select('*, college_courses(*)', { count: 'exact' })
+    .select(selectQuery, { count: 'exact' })
     .eq('status', 'active')
     .eq('is_deleted', false)
 
@@ -36,45 +41,15 @@ export async function GET(request: Request) {
   if (placement_min != null) query = query.gte('placement_rate', placement_min)
 
   if (stream) {
-    const { data: courseColleges } = await supabase
-      .from('college_courses')
-      .select('college_id')
-      .eq('stream', stream)
-
-    if (courseColleges?.length) {
-      const ids = [...new Set(courseColleges.map((c) => c.college_id))]
-      query = query.in('id', ids)
-    } else {
-      return NextResponse.json({ data: [], count: 0, page, pageSize })
-    }
+    query = query.eq('college_courses.stream', stream)
   }
 
   if (course) {
-    const { data: courseColleges } = await supabase
-      .from('college_courses')
-      .select('college_id')
-      .ilike('course_name', `%${course}%`)
-
-    if (courseColleges?.length) {
-      const ids = [...new Set(courseColleges.map((c) => c.college_id))]
-      query = query.in('id', ids)
-    } else {
-      return NextResponse.json({ data: [], count: 0, page, pageSize })
-    }
+    query = query.ilike('college_courses.course_name', `%${course}%`)
   }
 
   if (exam) {
-    const { data: examColleges } = await supabase
-      .from('college_courses')
-      .select('college_id')
-      .contains('exams_accepted', [exam])
-
-    if (examColleges?.length) {
-      const ids = [...new Set(examColleges.map((c) => c.college_id))]
-      query = query.in('id', ids)
-    } else {
-      return NextResponse.json({ data: [], count: 0, page, pageSize })
-    }
+    query = query.contains('college_courses.exams_accepted', [exam])
   }
 
   // Sorting

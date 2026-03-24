@@ -18,9 +18,7 @@ export async function getCurrentUser(): Promise<{
     return { authUser: null, dbUser: null, profile: null }
   }
 
-  const serviceClient = createServiceClient()
-
-  const { data: dbUser } = await serviceClient
+  const { data: dbUser } = await sessionClient
     .from('users')
     .select('*')
     .eq('auth_id', user.id)
@@ -30,7 +28,7 @@ export async function getCurrentUser(): Promise<{
     return { authUser: { id: user.id, email: user.email! }, dbUser: null, profile: null }
   }
 
-  const { data: profile } = await serviceClient
+  const { data: profile } = await sessionClient
     .from('student_profiles')
     .select('*')
     .eq('user_id', dbUser.id)
@@ -53,8 +51,7 @@ export async function verifyStudentOwnership(studentId: string) {
 
   if (!user) return { error: 'Unauthorized', status: 401 }
 
-  const serviceClient = createServiceClient()
-  const { data } = await serviceClient
+  const { data } = await sessionClient
     .from('users')
     .select('id')
     .eq('auth_id', user.id)

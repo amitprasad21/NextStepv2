@@ -7,9 +7,7 @@ export default async function DashboardPage() {
   const { data: { user } } = await sessionClient.auth.getUser()
   if (!user) redirect('/auth/login')
 
-  const supabase = createServiceClient()
-
-  const { data: dbUser } = await supabase
+  const { data: dbUser } = await sessionClient
     .from('users')
     .select('id')
     .eq('auth_id', user.id)
@@ -18,23 +16,23 @@ export default async function DashboardPage() {
   if (!dbUser) redirect('/auth/login')
 
   const [bookingsRes, visitsRes, savedRes, profileRes] = await Promise.all([
-    supabase
+    sessionClient
       .from('counselling_bookings')
       .select('id, status, preferred_date, preferred_time, booking_type, meeting_link')
       .eq('student_id', dbUser.id)
       .order('created_at', { ascending: false })
       .limit(5),
-    supabase
+    sessionClient
       .from('college_visits')
       .select('id, status, visit_date, college_id')
       .eq('student_id', dbUser.id)
       .order('created_at', { ascending: false })
       .limit(5),
-    supabase
+    sessionClient
       .from('saved_colleges')
       .select('id, college_id')
       .eq('student_id', dbUser.id),
-    supabase
+    sessionClient
       .from('student_profiles')
       .select('full_name, is_complete, desired_course, stream, city, state')
       .eq('user_id', dbUser.id)

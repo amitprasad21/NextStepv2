@@ -95,6 +95,7 @@ export async function POST(request: Request) {
       is_available: slot.booked_count + 1 < slot.max_capacity,
     })
     .eq('id', slot_id)
+    .eq('booked_count', slot.booked_count) // Optimistic concurrency lock: Fails if another user booked it in the last millisecond
     .lt('booked_count', slot.max_capacity)
     .select()
     .single()
