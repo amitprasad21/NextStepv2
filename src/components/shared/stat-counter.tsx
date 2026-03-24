@@ -22,7 +22,6 @@ export function StatCounter({ end, suffix = '', prefix = '', label, duration = 2
     const step = (timestamp: number) => {
       if (!startTime) startTime = timestamp
       const progress = Math.min((timestamp - startTime) / (duration * 1000), 1)
-      // Ease out cubic
       const eased = 1 - Math.pow(1 - progress, 3)
       setCount(Math.floor(eased * end))
       if (progress < 1) requestAnimationFrame(step)
@@ -36,13 +35,14 @@ export function StatCounter({ end, suffix = '', prefix = '', label, duration = 2
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       className="text-center"
     >
-      <p className="text-4xl font-bold text-primary md:text-5xl" style={{ fontFamily: 'var(--font-serif)' }}>
+      <p className="text-5xl font-bold text-white md:text-6xl" style={{ fontFamily: 'var(--font-sans)' }}>
         {prefix}{count.toLocaleString('en-IN')}{suffix}
       </p>
-      <p className="mt-2 text-sm font-medium text-muted-foreground">{label}</p>
+      <div className="mx-auto mt-3 h-px w-8 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+      <p className="mt-3 text-sm font-medium text-white/50 tracking-wide">{label}</p>
     </motion.div>
   )
 }

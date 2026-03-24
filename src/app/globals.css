@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  /* New NextStep palette — warm, sophisticated */
+  /* NextStep palette — warm, sophisticated */
   --background: #faf8f3;
   --foreground: #1a1814;
   --primary: #3d6b5e;
@@ -28,25 +28,30 @@
   --gold-light: #faf3e0;
   --orange: #c8651a;
   --orange-light: #fef0e4;
+
+  /* Stripe-inspired shadows — layered, realistic */
   --shadow-color: 220 3% 15%;
-  --shadow-elevation-low:
-    0.3px 0.5px 0.7px hsl(var(--shadow-color) / 0.1),
-    0.4px 0.8px 1px -1.2px hsl(var(--shadow-color) / 0.1),
-    1px 2px 2.5px -2.5px hsl(var(--shadow-color) / 0.1);
-  --shadow-elevation-medium:
-    0.3px 0.5px 0.7px hsl(var(--shadow-color) / 0.11),
-    0.8px 1.6px 2px -0.8px hsl(var(--shadow-color) / 0.11),
-    2.1px 4.1px 5.2px -1.7px hsl(var(--shadow-color) / 0.11),
-    5px 10px 12.6px -2.5px hsl(var(--shadow-color) / 0.11);
-  --shadow-elevation-high:
-    0.3px 0.5px 0.7px hsl(var(--shadow-color) / 0.1),
-    1.5px 2.9px 3.7px -0.4px hsl(var(--shadow-color) / 0.1),
-    2.7px 5.4px 6.8px -0.7px hsl(var(--shadow-color) / 0.1),
-    4.5px 8.9px 11.2px -1.1px hsl(var(--shadow-color) / 0.1),
-    7.1px 14.3px 18px -1.4px hsl(var(--shadow-color) / 0.1),
-    11.2px 22.3px 28.1px -1.8px hsl(var(--shadow-color) / 0.1),
-    17px 33.9px 42.7px -2.1px hsl(var(--shadow-color) / 0.1),
-    25px 50px 63px -2.5px hsl(var(--shadow-color) / 0.1);
+  --shadow-xs:
+    0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  --shadow-sm:
+    0 1px 2px 0 rgba(0, 0, 0, 0.04),
+    0 1px 3px 0 rgba(0, 0, 0, 0.06);
+  --shadow-md:
+    0 2px 4px -1px rgba(0, 0, 0, 0.04),
+    0 4px 6px -1px rgba(0, 0, 0, 0.06),
+    0 0 0 1px rgba(0, 0, 0, 0.02);
+  --shadow-lg:
+    0 4px 6px -2px rgba(0, 0, 0, 0.03),
+    0 10px 15px -3px rgba(0, 0, 0, 0.06),
+    0 0 0 1px rgba(0, 0, 0, 0.02);
+  --shadow-xl:
+    0 8px 10px -4px rgba(0, 0, 0, 0.03),
+    0 20px 25px -5px rgba(0, 0, 0, 0.07),
+    0 0 0 1px rgba(0, 0, 0, 0.02);
+  --shadow-2xl:
+    0 12px 15px -5px rgba(0, 0, 0, 0.04),
+    0 25px 50px -12px rgba(0, 0, 0, 0.12),
+    0 0 0 1px rgba(0, 0, 0, 0.02);
 }
 
 @theme inline {
@@ -91,11 +96,11 @@ body {
   border-color: var(--border);
 }
 
-/* ---- Typography ---- */
+/* ---- Typography — Stripe style: clean hierarchy ---- */
 h1, h2, h3, h4 {
   font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
-  letter-spacing: -0.02em;
-  line-height: 1.2;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
   font-weight: 700;
 }
 
@@ -104,7 +109,7 @@ html[data-scroll-behavior="smooth"] {
   scroll-behavior: smooth;
 }
 
-/* ---- Custom scrollbar ---- */
+/* ---- Custom scrollbar — subtle ---- */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -135,33 +140,79 @@ html[data-scroll-behavior="smooth"] {
   outline-offset: 2px;
 }
 
-/* ---- Custom utilities ---- */
+/* ---- Stripe-inspired shadow utilities ---- */
+.shadow-soft {
+  box-shadow: var(--shadow-sm);
+}
+
+.shadow-lifted {
+  box-shadow: var(--shadow-lg);
+}
+
+.shadow-dramatic {
+  box-shadow: var(--shadow-2xl);
+}
+
+/* ---- Glass effect ---- */
 .glass {
   background: var(--surface-glass);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
 }
 
-.shadow-soft {
-  box-shadow: var(--shadow-elevation-low);
-}
-
-.shadow-lifted {
-  box-shadow: var(--shadow-elevation-medium);
-}
-
-.shadow-dramatic {
-  box-shadow: var(--shadow-elevation-high);
-}
-
+/* ---- Gradient text ---- */
 .text-gradient {
-  background: linear-gradient(135deg, #3d6b5e 0%, #d4a843 50%, #c8651a 100%);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--gold) 50%, var(--secondary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* ---- Button hover glow ---- */
+.text-gradient-subtle {
+  background: linear-gradient(135deg, var(--foreground) 0%, var(--primary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ---- Stripe-style gradient border glow ---- */
+.border-glow {
+  position: relative;
+}
+
+.border-glow::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, var(--primary), var(--gold), var(--secondary));
+  opacity: 0;
+  transition: opacity 0.5s;
+  z-index: -1;
+}
+
+.border-glow:hover::before {
+  opacity: 0.15;
+}
+
+/* ---- Stripe-style card ---- */
+.stripe-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 0.4s;
+}
+
+.stripe-card:hover {
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--border) 50%, var(--primary) 20%);
+}
+
+/* ---- Stripe-style button glow ---- */
 .btn-glow {
   position: relative;
   overflow: hidden;
@@ -171,7 +222,7 @@ html[data-scroll-behavior="smooth"] {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%);
+  background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 50%);
   opacity: 0;
   transition: opacity 0.3s;
 }
@@ -180,21 +231,21 @@ html[data-scroll-behavior="smooth"] {
   opacity: 1;
 }
 
-/* ---- Card hover lift ---- */
+/* ---- Card hover lift — refined ---- */
 .card-hover {
   transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .card-hover:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-elevation-medium);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
 }
 
 /* ---- Stagger children animation ---- */
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -203,13 +254,13 @@ html[data-scroll-behavior="smooth"] {
 }
 
 .animate-fade-in-up {
-  animation: fadeInUp 0.5s ease-out forwards;
+  animation: fadeInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-/* ---- Animations ---- */
+/* ---- Animations — smooth, Stripe-like ---- */
 @keyframes float {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-12px); }
+  50% { transform: translateY(-10px); }
 }
 
 @keyframes shimmer {
@@ -218,13 +269,24 @@ html[data-scroll-behavior="smooth"] {
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(67, 56, 202, 0.15); }
-  50% { box-shadow: 0 0 40px rgba(67, 56, 202, 0.3); }
+  0%, 100% { box-shadow: 0 0 20px rgba(61, 107, 94, 0.15); }
+  50% { box-shadow: 0 0 40px rgba(61, 107, 94, 0.25); }
 }
 
 @keyframes gradient-shift {
   0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
+}
+
+@keyframes mesh-rotate {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.1); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes subtle-breathe {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.7; }
 }
 
 .animate-float {
@@ -245,14 +307,39 @@ html[data-scroll-behavior="smooth"] {
   animation: gradient-shift 5s ease infinite;
 }
 
-/* ---- Grain overlay for depth ---- */
+.animate-mesh {
+  animation: mesh-rotate 20s linear infinite;
+}
+
+.animate-breathe {
+  animation: subtle-breathe 4s ease-in-out infinite;
+}
+
+/* ---- Grain overlay for texture/depth ---- */
 .grain::after {
   content: '';
   position: absolute;
   inset: 0;
-  opacity: 0.03;
+  opacity: 0.025;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
   pointer-events: none;
+}
+
+/* ---- Stripe-style dot pattern ---- */
+.dot-pattern {
+  background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* ---- Stripe-style gradient mesh background ---- */
+.mesh-gradient {
+  background:
+    radial-gradient(at 27% 37%, rgba(61, 107, 94, 0.08) 0px, transparent 50%),
+    radial-gradient(at 97% 21%, rgba(200, 101, 26, 0.06) 0px, transparent 50%),
+    radial-gradient(at 52% 99%, rgba(212, 168, 67, 0.06) 0px, transparent 50%),
+    radial-gradient(at 10% 29%, rgba(61, 107, 94, 0.04) 0px, transparent 50%),
+    radial-gradient(at 97% 96%, rgba(200, 101, 26, 0.04) 0px, transparent 50%),
+    radial-gradient(at 33% 50%, rgba(212, 168, 67, 0.03) 0px, transparent 50%);
 }
 
 /* ---- Embla carousel ---- */
@@ -267,17 +354,17 @@ html[data-scroll-behavior="smooth"] {
   min-width: 0;
 }
 
-/* ---- Interactive input ---- */
+/* ---- Interactive input — refined ---- */
 input:not([type="checkbox"]):not([type="radio"]),
 select,
 textarea {
-  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 input:not([type="checkbox"]):not([type="radio"]):focus,
 select:focus,
 textarea:focus {
-  transform: translateY(-1px);
+  box-shadow: 0 0 0 3px rgba(61, 107, 94, 0.1);
 }
 
 /* ---- Link underline animation ---- */
@@ -291,11 +378,29 @@ textarea:focus {
   bottom: -2px;
   left: 0;
   width: 0;
-  height: 2px;
+  height: 1.5px;
   background: var(--primary);
-  transition: width 0.3s ease;
+  transition: width 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .link-underline:hover::after {
   width: 100%;
+}
+
+/* ---- Stripe-style section divider ---- */
+.section-divider {
+  position: relative;
+}
+
+.section-divider::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--primary), var(--gold));
+  opacity: 0.3;
 }
