@@ -89,9 +89,9 @@ async function sendEmailNotification(
     const resend = new Resend(resendKey)
 
     await resend.emails.send({
-      from: 'NextStep <notifications@nextstep.in>',
+      from: 'YourNextStep <updates@auth.yournextstep.me>',
       to: user.email,
-      subject: `NextStep — ${message}`,
+      subject: `YourNextStep — ${message}`,
       text: message,
     })
 
