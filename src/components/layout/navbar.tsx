@@ -12,7 +12,10 @@ interface NavbarProps {
 
 export function Navbar({
   variant = 'solid',
-  links = [{ href: '/colleges', label: 'Colleges' }],
+  links = [
+    { href: '/colleges', label: 'Colleges' },
+    { href: '/pricing', label: 'Pricing' }
+  ],
 }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
