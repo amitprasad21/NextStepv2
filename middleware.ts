@@ -1,7 +1,36 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { Ratelimit } from '@upstash/ratelimit'
+import { Redis } from '@upstash/redis'
+
+// Create a new ratelimiter that allows 30 requests per 10 seconds
+const ratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(30, '10 s'),
+  analytics: true,
+})
 
 export async function middleware(request: NextRequest) {
+  const path = request.nextUrl.pathname
+  const ip = request.headers.get('x-forwarded-for') ?? '127.0.0.1'
+
+  // ---- Rate Limiting ----
+  if (path.startsWith('/api')) {
+    if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
+      const { success, limit, reset, remaining } = await ratelimit.limit(`ratelimit_${ip}`)
+      if (!success) {
+        return new NextResponse(JSON.stringify({ error: 'Too Many Requests' }), {
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': limit.toString(),
+            'X-RateLimit-Remaining': remaining.toString(),
+            'X-RateLimit-Reset': reset.toString(),
+          },
+        })
+      }
+    }
+  }
+
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
@@ -30,8 +59,6 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getSession()
   
   const user = session?.user
-
-  const path = request.nextUrl.pathname
 
   // ---- Unauthenticated users ----
   if ((path.startsWith('/dashboard') || path.startsWith('/admin') || path.startsWith('/onboarding')) && !user) {
@@ -76,5 +103,6 @@ export const config = {
     '/admin/:path*',
     '/onboarding/:path*',
     '/auth/login',
+    '/api/:path*',
   ],
 }

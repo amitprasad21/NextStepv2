@@ -59,11 +59,9 @@ export default async function DashboardLayout({
       {/* Top nav */}
       <header className="sticky top-0 z-40 border-b border-border/60 bg-card/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5">
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-dark shadow-md transition-transform duration-300 group-hover:scale-105">
-              <span className="text-sm font-bold text-primary-foreground tracking-tight">N</span>
-            </div>
-            <span className="text-lg font-bold text-foreground transition-colors" style={{ fontFamily: 'var(--font-serif)' }}>
+          <Link href="/" className="flex items-center gap-0 group">
+            <img src="/Nextstep_logo.png" alt="NextStep Logo" className="-ml-2 -mr-5 md:-mr-6 h-14 md:h-16 w-auto object-contain transition-transform duration-300 group-hover:scale-105" />
+            <span className="text-lg md:text-xl font-bold text-foreground transition-colors" style={{ fontFamily: 'var(--font-serif)' }}>
               NextStep
             </span>
           </Link>

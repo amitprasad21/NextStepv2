@@ -2,6 +2,9 @@ import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import { collegeFiltersSchema } from '@/validators/college'
 
+// Revalidate this public API every 1 hour on Vercel Edge caching
+export const revalidate = 3600
+
 /**
  * GET /api/colleges — Public. Paginated (max 50/page), filterable directory.
  */
@@ -34,7 +37,7 @@ export async function GET(request: Request) {
   if (state) query = query.eq('state', state)
   if (fee_min != null) query = query.gte('fee_min', fee_min)
   if (fee_max != null) query = query.lte('fee_max', fee_max)
-  if (search) query = query.ilike('name', `%${search}%`)
+  if (search) query = query.textSearch('name', search, { type: 'websearch' })
   if (college_type) query = query.eq('college_type', college_type)
   if (has_hostel) query = query.eq('hostel_available', true)
   if (has_scholarship) query = query.eq('scholarship', true)

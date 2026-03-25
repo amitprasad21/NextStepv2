@@ -7,12 +7,10 @@ export function Footer() {
         <div className="grid gap-12 md:grid-cols-5">
           {/* Brand — 2 cols */}
           <div className="md:col-span-2">
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-dark shadow-sm">
-                <span className="text-sm font-bold text-white tracking-tight">N</span>
-              </div>
+            <div className="flex items-center gap-0">
+              <img src="/Nextstep_logo.png" alt="NextStep Logo" className="-ml-2 -mr-5 md:-mr-6 h-14 md:h-16 w-auto object-contain" />
               <span
-                className="text-xl font-bold text-foreground tracking-tight"
+                className="text-lg md:text-xl font-bold text-foreground tracking-tight"
                 style={{ fontFamily: 'var(--font-serif)' }}
               >
                 NextStep

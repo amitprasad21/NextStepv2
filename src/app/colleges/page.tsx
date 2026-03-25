@@ -51,6 +51,7 @@ export default function CollegesPage() {
     search: '',
     state: '',
     stream: '',
+    course: '',
     college_type: '',
     fee_min: '' as string | number,
     fee_max: '' as string | number,
@@ -70,6 +71,7 @@ export default function CollegesPage() {
     if (filters.search) params.set('search', filters.search)
     if (filters.state) params.set('state', filters.state)
     if (filters.stream) params.set('stream', filters.stream)
+    if (filters.course) params.set('course', filters.course)
     if (filters.college_type) params.set('college_type', filters.college_type)
     if (filters.fee_min !== '') params.set('fee_min', filters.fee_min.toString())
     if (filters.fee_max !== '') params.set('fee_max', filters.fee_max.toString())
@@ -104,7 +106,7 @@ export default function CollegesPage() {
 
   const clearFilters = () => {
     setFilters({
-      search: '', state: '', stream: '', college_type: '',
+      search: '', state: '', stream: '', course: '', college_type: '',
       fee_min: '', fee_max: '', has_hostel: false, has_scholarship: false,
       placement_min: '', sort_by: '', sort_order: 'desc', page: 1,
     })
@@ -112,7 +114,7 @@ export default function CollegesPage() {
   }
 
   const activeFilterCount = [
-    filters.state, filters.stream, filters.college_type,
+    filters.state, filters.stream, filters.course, filters.college_type,
     filters.fee_min !== '' ? 'fee' : '',
     filters.has_hostel ? 'hostel' : '',
     filters.has_scholarship ? 'scholarship' : '',
@@ -202,7 +204,7 @@ export default function CollegesPage() {
                   <button onClick={clearFilters} className="text-xs font-medium text-primary hover:text-primary-dark transition-colors">Clear All</button>
                 </div>
 
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
                   {/* State */}
                   <div>
                     <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">State</label>
@@ -228,6 +230,18 @@ export default function CollegesPage() {
                       <option value="UG">Undergraduate (UG)</option>
                       <option value="PG">Postgraduate (PG)</option>
                     </select>
+                  </div>
+
+                  {/* Course */}
+                  <div>
+                    <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Course</label>
+                    <input
+                      type="text"
+                      value={filters.course}
+                      onChange={(e) => setFilters((f) => ({ ...f, course: e.target.value, page: 1 }))}
+                      placeholder="e.g. BTech, MBA"
+                      className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    />
                   </div>
 
                   {/* College Type */}

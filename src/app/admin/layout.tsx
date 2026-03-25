@@ -36,12 +36,10 @@ export default async function AdminLayout({
       {/* Sidebar */}
       <aside className="hidden w-64 flex-col border-r border-border/60 bg-card md:flex">
         <div className="flex h-16 items-center border-b border-border/60 px-5">
-          <Link href="/admin" className="flex items-center gap-2.5 group">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-dark shadow-md transition-transform group-hover:scale-105">
-              <span className="text-sm font-bold text-primary-foreground tracking-tight">N</span>
-            </div>
+          <Link href="/admin" className="flex items-center gap-0 group">
+            <img src="/Nextstep_logo.png" alt="NextStep Logo" className="-ml-2 -mr-5 md:-mr-6 h-14 md:h-16 w-auto object-contain transition-transform group-hover:scale-105" />
             <div className="flex items-center gap-1.5">
-              <span className="text-base font-bold text-foreground" style={{ fontFamily: 'var(--font-serif)' }}>
+              <span className="text-lg md:text-xl font-bold text-foreground" style={{ fontFamily: 'var(--font-serif)' }}>
                 NextStep
               </span>
               <span className="rounded-md bg-primary/10 px-1.5 py-0.5 text-[10px] font-bold text-primary uppercase tracking-wider">Admin</span>
@@ -85,11 +83,10 @@ export default async function AdminLayout({
       <div className="flex flex-1 flex-col">
         {/* Mobile header */}
         <header className="flex h-16 items-center justify-between border-b border-border/60 bg-card px-5 md:hidden">
-          <Link href="/admin" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary-dark shadow-sm">
-              <span className="text-xs font-bold text-primary-foreground">N</span>
-            </div>
-            <span className="text-sm font-bold text-foreground">Admin</span>
+          <Link href="/admin" className="flex items-center gap-0">
+            <img src="/Nextstep_logo.png" alt="NextStep Logo" className="-ml-2 -mr-3 md:-mr-4 h-10 md:h-12 w-auto object-contain" />
+            <span className="text-sm font-bold text-foreground">NextStep</span>
+            <span className="mt-0.5 rounded-md bg-primary/10 px-1.5 py-0.5 text-[10px] font-bold text-primary uppercase tracking-wider">Admin</span>
           </Link>
           <LogoutButton />
         </header>

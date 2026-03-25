@@ -9,20 +9,10 @@ export async function GET() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const admin = createServiceClient()
-
-  let { data: dbUser } = await admin.from('users').select('id').eq('auth_id', user.id).single()
-  if (!dbUser) {
-    const { data: created } = await admin
-      .from('users')
-      .insert({ auth_id: user.id, email: user.email!, role: 'student', is_verified: true })
-      .select('id')
-      .single()
-    dbUser = created
-  }
+  const { data: dbUser } = await supabase.from('users').select('id').eq('auth_id', user.id).single()
   if (!dbUser) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
-  const { data, error } = await admin
+  const { data, error } = await supabase
     .from('saved_colleges')
     .select('id, college_id, college:colleges(id, name, city, state, fee_min, fee_max, image_paths, college_type, placement_rate)')
     .eq('student_id', dbUser.id)
@@ -40,17 +30,7 @@ export async function POST(request: Request) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const admin = createServiceClient()
-
-  let { data: dbUser } = await admin.from('users').select('id').eq('auth_id', user.id).single()
-  if (!dbUser) {
-    const { data: created } = await admin
-      .from('users')
-      .insert({ auth_id: user.id, email: user.email!, role: 'student', is_verified: true })
-      .select('id')
-      .single()
-    dbUser = created
-  }
+  const { data: dbUser } = await supabase.from('users').select('id').eq('auth_id', user.id).single()
   if (!dbUser) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
   const body = await request.json()
@@ -59,7 +39,7 @@ export async function POST(request: Request) {
   if (!college_id) return NextResponse.json({ error: 'college_id required' }, { status: 400 })
 
   // Max 10 check
-  const { count } = await admin
+  const { count } = await supabase
     .from('saved_colleges')
     .select('*', { count: 'exact', head: true })
     .eq('student_id', dbUser.id)
@@ -68,7 +48,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'You can save up to 10 colleges.' }, { status: 400 })
   }
 
-  const { data, error } = await admin
+  const { data, error } = await supabase
     .from('saved_colleges')
     .insert({ student_id: dbUser.id, college_id })
     .select()
