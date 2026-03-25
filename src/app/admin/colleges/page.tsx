@@ -82,6 +82,7 @@ export default function AdminCollegesPage() {
     setLoading(false)
   }
 
+  // eslint-disable-next-line
   useEffect(() => { fetchColleges() }, [])
 
   const resetForm = () => {
@@ -265,13 +266,13 @@ export default function AdminCollegesPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground sm:text-3xl" style={{ fontFamily: 'var(--font-sans)' }}>College Management</h1>
           <p className="mt-1 text-sm text-muted-foreground">Add, edit, and manage colleges on the platform.</p>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="relative">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
+          <div className="relative w-full sm:w-auto">
             <input
               type="file"
               accept=".csv"
@@ -282,7 +283,7 @@ export default function AdminCollegesPage() {
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={uploadingCsv}
-              className="flex items-center gap-2 rounded-xl border border-border bg-card px-5 py-2.5 text-sm font-semibold text-muted-foreground shadow-sm hover:bg-accent transition-colors disabled:opacity-50"
+              className="flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl border border-border bg-card px-5 py-2.5 text-sm font-semibold text-muted-foreground shadow-sm hover:bg-accent transition-colors disabled:opacity-50"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 4L12 16M12 4L8 8M12 4L16 8M4 20H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
               Bulk Import CSV
@@ -290,7 +291,7 @@ export default function AdminCollegesPage() {
           </div>
           <button
             onClick={() => setShowForm(!showForm)}
-            className={`flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold shadow-md transition-all duration-300 hover:-translate-y-0.5 ${
+            className={`flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold shadow-md transition-all duration-300 hover:-translate-y-0.5 ${
               showForm
                 ? 'border border-border bg-card text-foreground hover:bg-accent'
                 : 'bg-primary text-primary-foreground hover:bg-primary/90'
@@ -342,14 +343,14 @@ export default function AdminCollegesPage() {
                   Basic Information
                 </h4>
                 <input value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} placeholder="College name *" className={inputClass} />
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <input value={form.city} onChange={(e) => setForm({...form, city: e.target.value})} placeholder="City *" className={inputClass} />
                   <select value={form.state} onChange={(e) => setForm({...form, state: e.target.value})} className={inputClass}>
                     <option value="">Select State *</option>
                     {INDIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className={labelClass}>College Type</label>
                     <select value={form.college_type} onChange={(e) => setForm({...form, college_type: e.target.value})} className={inputClass}>
@@ -365,7 +366,7 @@ export default function AdminCollegesPage() {
                   </div>
                 </div>
                 <textarea value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} placeholder="College description — highlight key features, history, and achievements..." className={`${inputClass} resize-none`} rows={4} />
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className={labelClass}>Website URL</label>
                     <input value={form.website} onChange={(e) => setForm({...form, website: e.target.value})} placeholder="https://www.college.edu" className={inputClass} />
@@ -383,7 +384,7 @@ export default function AdminCollegesPage() {
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 15l-2 5-1-1-5 1 1-5-1-1 5-2 1-1 1-5 1 5 1 1z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                   Accreditation & Rankings
                 </h4>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className={labelClass}>Accreditation</label>
                     <input value={form.accreditation} onChange={(e) => setForm({...form, accreditation: e.target.value})} placeholder="e.g. NAAC A+, NBA" className={inputClass} />
@@ -401,7 +402,7 @@ export default function AdminCollegesPage() {
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                   Fees & Placement
                 </h4>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className={labelClass}>Min Fee (INR/year)</label>
                     <input type="number" min={0} value={form.fee_min} onChange={(e) => setForm({...form, fee_min: e.target.value === '' ? '' : Number(e.target.value)})} placeholder="e.g. 50000" className={inputClass} />
@@ -411,7 +412,7 @@ export default function AdminCollegesPage() {
                     <input type="number" min={0} value={form.fee_max} onChange={(e) => setForm({...form, fee_max: e.target.value === '' ? '' : Number(e.target.value)})} placeholder="e.g. 200000" className={inputClass} />
                   </div>
                 </div>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
                     <label className={labelClass}>Placement Rate (%)</label>
                     <input type="number" min={0} max={100} step={0.1} value={form.placement_rate} onChange={(e) => setForm({...form, placement_rate: e.target.value === '' ? '' : Number(e.target.value)})} placeholder="e.g. 92" className={inputClass} />
@@ -444,7 +445,7 @@ export default function AdminCollegesPage() {
                     >{f}</button>
                   ))}
                 </div>
-                <div className="flex items-center gap-6">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
                   <label className="flex items-center gap-2 text-sm text-foreground cursor-pointer">
                     <input type="checkbox" checked={form.hostel_available} onChange={(e) => setForm({...form, hostel_available: e.target.checked})} className="h-4 w-4 rounded border-border text-primary accent-primary" />
                     Hostel Available

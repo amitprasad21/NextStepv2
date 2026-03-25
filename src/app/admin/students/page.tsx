@@ -59,6 +59,7 @@ export default function AdminStudentsPage() {
     setLoading(false)
   }
 
+  // eslint-disable-next-line
   useEffect(() => { fetchStudents() }, [page])
 
   const handleSearch = (e: React.FormEvent) => {

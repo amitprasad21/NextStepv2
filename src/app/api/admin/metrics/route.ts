@@ -11,12 +11,15 @@ export async function GET() {
 
   const supabase = createServiceClient()
 
-  const [students, bookings, visits, colleges] = await Promise.all([
+  const [students, bookings, visits, colleges, transactions] = await Promise.all([
     supabase.from('users').select('*', { count: 'exact', head: true }).eq('role', 'student'),
     supabase.from('counselling_bookings').select('status'),
     supabase.from('college_visits').select('status'),
     supabase.from('colleges').select('*', { count: 'exact', head: true }).eq('is_deleted', false),
+    supabase.from('payment_transactions').select('amount_inr').eq('status', 'success'),
   ])
+  
+  const totalRevenue = transactions.data?.reduce((acc, curr) => acc + (curr.amount_inr || 0), 0) || 0;
 
   const bookingsByStatus = {
     pending: 0, confirmed: 0, completed: 0, cancelled: 0,
@@ -42,6 +45,7 @@ export async function GET() {
       visitsByStatus,
       totalBookings: bookings.data?.length ?? 0,
       totalVisits: visits.data?.length ?? 0,
+      totalRevenue,
     },
   })
 }

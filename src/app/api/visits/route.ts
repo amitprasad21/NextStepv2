@@ -35,15 +35,27 @@ export async function POST(request: Request) {
   const { data: dbUser } = await supabase.from('users').select('id').eq('auth_id', user.id).single()
   if (!dbUser) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
-  // Check is_complete
+  // Check is_complete and free limits
   const { data: profile } = await supabase
     .from('student_profiles')
-    .select('is_complete')
+    .select('is_complete, used_free_visits, purchased_visits')
     .eq('user_id', dbUser.id)
     .single()
 
   if (!profile?.is_complete) {
     return NextResponse.json({ error: 'Complete your profile first' }, { status: 403 })
+  }
+
+  // Freemium Logic: Check purchased credits first, then free limits
+  const hasPurchased = (profile.purchased_visits ?? 0) > 0;
+
+  if (!hasPurchased && (profile.used_free_visits ?? 0) >= 1) {
+    const { data: settings } = await supabase.from('platform_settings').select('visit_price_inr').single()
+    return NextResponse.json({ 
+      error: 'Free limit reached', 
+      requires_payment: true, 
+      price: settings?.visit_price_inr || 499 
+    }, { status: 402 })
   }
 
   const body = await request.json()
@@ -97,6 +109,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'You already have a visit request for this college on this date.' }, { status: 409 })
     }
     return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+
+  // Increment odometer or decrement purchased credits
+  if ((profile.purchased_visits ?? 0) > 0) {
+    await supabase
+      .from('student_profiles')
+      .update({ purchased_visits: profile.purchased_visits - 1 })
+      .eq('user_id', dbUser.id)
+  } else {
+    await supabase
+      .from('student_profiles')
+      .update({ used_free_visits: (profile.used_free_visits ?? 0) + 1 })
+      .eq('user_id', dbUser.id)
   }
 
   return NextResponse.json({ data: visit }, { status: 201 })

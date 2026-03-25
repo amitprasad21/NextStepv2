@@ -9,6 +9,7 @@ interface Metrics {
   totalColleges: number
   totalBookings: number
   totalVisits: number
+  totalRevenue?: number
   bookingsByStatus: Record<string, number>
   visitsByStatus: Record<string, number>
 }
@@ -56,10 +57,11 @@ export default function AdminDashboard() {
   }
 
   const cards = [
-    { label: 'Total Students', value: metrics.totalStudents, icon: 'M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2', color: 'from-primary to-primary-dark', iconBg: 'bg-primary-light text-primary', href: '/admin/students' },
-    { label: 'Total Colleges', value: metrics.totalColleges, icon: 'M12 14l9-5-9-5-9 5 9 5z', color: 'from-amber-500 to-amber-700', iconBg: 'bg-surface-warm text-amber-700', href: '/admin/colleges' },
-    { label: 'Total Bookings', value: metrics.totalBookings, icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z', color: 'from-green-500 to-green-700', iconBg: 'bg-green-50 text-green-700', href: '/admin/bookings' },
-    { label: 'Total Visits', value: metrics.totalVisits, icon: 'M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z', color: 'from-blue-500 to-blue-700', iconBg: 'bg-blue-50 text-blue-700', href: '/admin/visits' },
+    { label: 'Total Revenue', value: `₹${(metrics.totalRevenue || 0).toLocaleString('en-IN')}`, icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z', color: 'from-purple-500 to-purple-700', iconBg: 'bg-purple-50 text-purple-700', href: '/admin/transactions' },
+    { label: 'Total Students', value: metrics.totalStudents.toLocaleString('en-IN'), icon: 'M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2', color: 'from-primary to-primary-dark', iconBg: 'bg-primary-light text-primary', href: '/admin/students' },
+    { label: 'Total Colleges', value: metrics.totalColleges.toLocaleString('en-IN'), icon: 'M12 14l9-5-9-5-9 5 9 5z', color: 'from-amber-500 to-amber-700', iconBg: 'bg-surface-warm text-amber-700', href: '/admin/colleges' },
+    { label: 'Total Bookings', value: metrics.totalBookings.toLocaleString('en-IN'), icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z', color: 'from-green-500 to-green-700', iconBg: 'bg-green-50 text-green-700', href: '/admin/bookings' },
+    { label: 'Total Visits', value: metrics.totalVisits.toLocaleString('en-IN'), icon: 'M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z', color: 'from-blue-500 to-blue-700', iconBg: 'bg-blue-50 text-blue-700', href: '/admin/visits' },
   ]
 
   return (
@@ -94,7 +96,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
               <p className="mt-3 text-3xl font-bold text-foreground" style={{ fontFamily: 'var(--font-sans)' }}>
-                {card.value.toLocaleString('en-IN')}
+                {card.value}
               </p>
               <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r opacity-0 transition-opacity group-hover:opacity-100" style={{ backgroundImage: `linear-gradient(to right, var(--primary), var(--secondary))` }} />
             </Link>

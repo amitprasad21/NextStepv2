@@ -1,0 +1,194 @@
+﻿
+> nextstep-temp@0.1.0 lint
+> eslint
+
+
+C:\NextStep\src\app\admin\bookings\page.tsx
+  4:18  warning  'AnimatePresence' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\NextStep\src\app\admin\colleges\page.tsx
+   85:21  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\NextStep\src\app\admin\colleges\page.tsx:85:21
+  83 |   }
+  84 |
+> 85 |   useEffect(() => { fetchColleges() }, [])
+     |                     ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  86 |
+  87 |   const resetForm = () => {
+  88 |     setForm({  react-hooks/set-state-in-effect
+  182:33  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-explicit-any
+  183:38  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-explicit-any
+  214:20  warning  'err' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-unused-vars
+  479:25  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @next/next/no-img-element
+
+C:\NextStep\src\app\admin\layout.tsx
+  40:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  87:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\NextStep\src\app\admin\students\page.tsx
+  62:21  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\NextStep\src\app\admin\students\page.tsx:62:21
+  60 |   }
+  61 |
+> 62 |   useEffect(() => { fetchStudents() }, [page])
+     |                     ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  63 |
+  64 |   const handleSearch = (e: React.FormEvent) => {
+  65 |     e.preventDefault()  react-hooks/set-state-in-effect
+  62:40  warning  React Hook useEffect has a missing dependency: 'fetchStudents'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-hooks/exhaustive-deps
+
+C:\NextStep\src\app\api\bookings\route.ts
+  1:24  warning  'createServiceClient' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\NextStep\src\app\api\health\route.ts
+  11:20  warning  'count' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\NextStep\src\app\api\razorpay\order\route.ts
+  30:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\NextStep\src\app\api\razorpay\verify\route.ts
+  67:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\NextStep\src\app\api\saved\route.ts
+  1:24  warning  'createServiceClient' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\NextStep\src\app\colleges\[id]\client.tsx
+   40:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+   92:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  106:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\NextStep\src\app\colleges\[id]\page.tsx
+  3:8  warning  'Link' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\NextStep\src\app\colleges\compare\page.tsx
+  100:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\NextStep\src\app\colleges\compare\page.tsx:100:9
+   98 |       const ids = idsParam.split(',').filter(Boolean).slice(0, 3)
+   99 |       if (ids.length > 0) {
+> 100 |         setSelectedIds(ids)
+      |         ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  101 |       }
+  102 |     }
+  103 |   }, [searchParams])  react-hooks/set-state-in-effect
+  132:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\NextStep\src\app\colleges\compare\page.tsx:132:5
+  130 |
+  131 |   useEffect(() => {
+> 132 |     fetchComparison(selectedIds)
+      |     ^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  133 |   }, [selectedIds, fetchComparison])
+  134 |
+  135 |   // Close picker when clicking outside                                react-hooks/set-state-in-effect
+
+C:\NextStep\src\app\colleges\page.tsx
+  102:5  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\NextStep\src\app\colleges\page.tsx:102:5
+  100 |
+  101 |   useEffect(() => {
+> 102 |     fetchColleges()
+      |     ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  103 |   }, [filters.page])
+  104 |
+  105 |   const handleSearch = (e: React.FormEvent) => {  react-hooks/set-state-in-effect
+  103:6  warning  React Hook useEffect has a missing dependency: 'fetchColleges'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           react-hooks/exhaustive-deps
+
+C:\NextStep\src\app\dashboard\bookings\page.tsx
+    4:8   warning  'Link' is defined but never used          @typescript-eslint/no-unused-vars
+  123:44  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  140:34  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  142:17  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\NextStep\src\app\dashboard\layout.tsx
+   2:24  warning  'createServiceClient' is defined but never used                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+   4:10  warning  'NotificationBell' is defined but never used                                                                                                                                                                                                                                             @typescript-eslint/no-unused-vars
+  63:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\NextStep\src\app\dashboard\notifications\page.tsx
+  68:18  error  Error: Cannot call impure function during render
+
+`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\NextStep\src\app\dashboard\notifications\page.tsx:68:18
+  66 |
+  67 |   const timeAgo = (dateStr: string) => {
+> 68 |     const diff = Date.now() - new Date(dateStr).getTime()
+     |                  ^^^^^^^^^^ Cannot call impure function
+  69 |     const mins = Math.floor(diff / 60000)
+  70 |     if (mins < 1) return 'Just now'
+  71 |     if (mins < 60) return `${mins}m ago`  react-hooks/purity
+
+C:\NextStep\src\app\dashboard\page.tsx
+  1:24  warning  'createServiceClient' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\NextStep\src\app\dashboard\saved\page.tsx
+  122:23  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\NextStep\src\app\dashboard\visits\page.tsx
+  121:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  138:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  140:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\NextStep\src\app\privacy-policy\page.tsx
+  24:28  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  24:31  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  24:34  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  24:38  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  24:44  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  24:47  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\NextStep\src\app\refund-policy\page.tsx
+  32:120  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  32:129  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\NextStep\src\app\terms-and-conditions\page.tsx
+  29:323  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\NextStep\src\components\layout\footer.tsx
+  11:15  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\NextStep\src\components\layout\navbar.tsx
+  67:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\NextStep\src\components\shared\college-card.tsx
+  47:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\NextStep\src\lib\auth\get-user.ts
+  1:24  warning  'createServiceClient' is defined but never used  @typescript-eslint/no-unused-vars
+
+Γ£û 49 problems (25 errors, 24 warnings)
+

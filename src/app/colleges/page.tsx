@@ -99,6 +99,7 @@ function CollegesContent() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line
     fetchColleges()
   }, [filters.page])
 

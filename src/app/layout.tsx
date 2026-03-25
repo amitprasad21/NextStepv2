@@ -17,13 +17,12 @@ const playfair = Playfair_Display({
 })
 
 export const metadata: Metadata = {
-  title: {
-    default: 'NextStep — College Discovery & Admission Guidance',
-    template: '%s | NextStep',
+  title: "NextStep | Expert Guidance & College Admissions",
+  description: "Your unified platform for premium counselling, college discovery, and seamless campus visit bookings.",
+  icons: {
+    icon: "/Nextstep_logo.png",
   },
-  description:
-    'Navigate your college admission journey with structured guidance, counselling, and college visits.',
-}
+};
 
 export default function RootLayout({
   children,

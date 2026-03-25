@@ -25,7 +25,12 @@ export default function TermsConditionsPage() {
             </section>
 
             <section className="space-y-3">
-              <h2 className="text-xl font-semibold text-foreground mt-8">2. College Information Disclaimer</h2>
+              <h2 className="text-xl font-semibold text-foreground mt-8">2. Acceptable Use</h2>
+              <p className="mt-4 text-sm leading-relaxed text-muted-foreground">You agree to use NextStep only for lawful purposes. You must not use our platform in any way that causes, or may cause, damage to the website or impairment of the availability or accessibility of the website. Attempting to bypass the platform&apos;s payment architecture is strictly prohibited.</p>
+            </section>
+
+            <section className="space-y-3">
+              <h2 className="text-xl font-semibold text-foreground mt-8">3. College Information Disclaimer</h2>
               <p>While we strive to keep our college directory (including fees, placements, and accreditation) completely accurate and up-to-date, college policies and fee structures are subject to change by the respective institutions. NextStep is not legally liable for discrepancies between our database and the college's official data. Always verify critical information directly with the institution.</p>
             </section>
 

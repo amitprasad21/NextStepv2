@@ -46,6 +46,10 @@ export default function PrivacyPolicyPage() {
             </section>
 
             <section className="space-y-3">
+              <p className="mt-4 text-sm leading-relaxed text-muted-foreground">We use cookies to enhance your experience. By using &quot;NextStep&quot;, you consent to our use of cookies according to this Privacy Policy.</p>
+            </section>
+
+            <section className="space-y-3">
               <h2 className="text-xl font-semibold text-foreground mt-8">5. Contact Us</h2>
               <p>If you have any questions about this Privacy Policy, please contact us at hello@nextstep.in.</p>
             </section>

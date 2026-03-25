@@ -11,8 +11,8 @@ const NOTIFICATION_MESSAGES: Record<NotificationType, string> = {
   welcome: 'Welcome to NextStep! Complete your profile to get started.',
 }
 
-function buildMessage(type: NotificationType): string {
-  return NOTIFICATION_MESSAGES[type] || 'You have a new notification.'
+function buildMessage(type: string): string {
+  return (NOTIFICATION_MESSAGES as Record<string, string>)[type] || 'You have a new notification.'
 }
 
 /**
@@ -24,11 +24,12 @@ function buildMessage(type: NotificationType): string {
  */
 export async function dispatchNotifications(
   studentId: string,
-  type: NotificationType,
-  referenceId: string
+  type: string,
+  referenceId: string,
+  customMessage?: string
 ) {
   const supabase = createServiceClient()
-  const message = buildMessage(type)
+  const message = customMessage || buildMessage(type)
 
   // 1. in_app: synchronous
   await supabase.from('notifications').insert({
@@ -49,7 +50,7 @@ export async function dispatchNotifications(
 
 async function sendEmailNotification(
   studentId: string,
-  type: NotificationType,
+  type: string,
   message: string,
   referenceId: string
 ) {

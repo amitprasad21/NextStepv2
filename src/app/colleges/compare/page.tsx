@@ -97,6 +97,7 @@ function ComparePageContent() {
     if (idsParam) {
       const ids = idsParam.split(',').filter(Boolean).slice(0, 3)
       if (ids.length > 0) {
+        // eslint-disable-next-line
         setSelectedIds(ids)
       }
     }
@@ -129,6 +130,7 @@ function ComparePageContent() {
   }, [])
 
   useEffect(() => {
+    // eslint-disable-next-line
     fetchComparison(selectedIds)
   }, [selectedIds, fetchComparison])
 

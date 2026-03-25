@@ -88,8 +88,60 @@ export default function VisitsPage() {
     }
 
     const interval = setInterval(() => { fetchVisits() }, 30000)
+
+    // Load Razorpay SDK
+    const script = document.createElement('script')
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js'
+    script.async = true
+    document.body.appendChild(script)
+
     return () => clearInterval(interval)
   }, [])
+
+  const handlePayment = async (amount: number) => {
+    try {
+      setMessageType('success')
+      setMessage('Unlocking Secure Checkout...')
+      
+      const res = await fetch('/api/razorpay/order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount, type: 'visit' }),
+      })
+      const order = await res.json()
+      if (!res.ok) throw new Error(order.error)
+
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: order.amount,
+        currency: "INR",
+        name: "NextStep Premium",
+        description: "Campus Visit Pass",
+        order_id: order.id,
+        handler: async function (response: any) {
+          setMessage('Verifying payment...')
+          const verify = await fetch('/api/razorpay/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ...response, type: 'visit' })
+          })
+          if (verify.ok) {
+            setMessage('Payment unlocked! Finalizing your booking...')
+            handleRequest() // Automatically retry booking now that they have a credit
+          } else {
+            setMessageType('error')
+            setMessage('Payment verification failed. Please contact support.')
+          }
+        },
+        theme: { color: "#4f46e5" }
+      }
+      const rzp = new (window as any).Razorpay(options)
+      rzp.open()
+    } catch (e: any) {
+      setMessageType('error')
+      setMessage(e.message || 'Failed to initialize checkout')
+    }
+  }
 
   const handleRequest = async () => {
     if (!selectedCollege || !visitDate) return
@@ -111,8 +163,14 @@ export default function VisitsPage() {
       setVisitDate('')
       fetchVisits()
     } else {
-      setMessageType('error')
-      setMessage(data.error || 'Failed to request visit')
+      if (res.status === 402) {
+        setMessageType('error')
+        setMessage(`Free limit maxed. Triggering premium unlock processing...`)
+        handlePayment(data.price)
+      } else {
+        setMessageType('error')
+        setMessage(data.error || 'Failed to request visit')
+      }
     }
     setSubmitting(false)
   }

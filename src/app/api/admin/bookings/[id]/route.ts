@@ -108,10 +108,18 @@ export async function PATCH(
 
   // Dispatch notification only on actual status change
   if (isStatusChange) {
+    let customMsg: string | undefined
+    if (newStatus === 'confirmed' && updateData.meeting_link) {
+      customMsg = `Your counselling booking has been confirmed! Join your meeting here: ${updateData.meeting_link}`
+    } else if (newStatus === 'confirmed' && booking.meeting_link) {
+      customMsg = `Your counselling booking has been confirmed! Join your meeting here: ${booking.meeting_link}`
+    }
+
     await dispatchNotifications(
       booking.student_id,
       `booking_${newStatus}` as 'booking_confirmed' | 'booking_cancelled' | 'booking_completed',
-      booking.id
+      booking.id,
+      customMsg
     )
   }
 

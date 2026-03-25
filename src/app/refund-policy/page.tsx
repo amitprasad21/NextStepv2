@@ -21,6 +21,7 @@ export default function RefundPolicyPage() {
             
             <section className="space-y-3">
               <h2 className="text-xl font-semibold text-foreground mt-8">1. General Policy</h2>
+              <p className="mt-4 text-sm leading-relaxed text-muted-foreground">Due to the real-time nature of our &quot;counselling sessions&quot; and &quot;campus visits&quot;, refunds are generally not provided once a booking is confirmed, except in cases of platform error or provider cancellation.</p>
               <p>At NextStep, our goal is to provide exceptional guidance. Because our premium counselling sessions and guided campus campus visits require advance coordination with experts and institutions, we enforce a strict but fair refund policy.</p>
             </section>
 
