@@ -105,12 +105,15 @@ export function Footer() {
           <p className="text-xs text-muted-foreground/60">
             &copy; {new Date().getFullYear()} NextStep. All rights reserved.
           </p>
-          <div className="flex gap-6">
-            <Link href="#" className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors">
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+            <Link href="/privacy-policy" className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors">
               Privacy Policy
             </Link>
-            <Link href="#" className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors">
-              Terms of Service
+            <Link href="/terms-and-conditions" className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors">
+              Terms & Conditions
+            </Link>
+            <Link href="/refund-policy" className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors">
+              Refund Policy
             </Link>
           </div>
         </div>

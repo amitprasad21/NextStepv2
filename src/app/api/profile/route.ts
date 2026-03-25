@@ -1,4 +1,4 @@
-import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import { profileSchema, profileUpdateSchema, computeIsComplete } from '@/validators/profile'
 import type { ProfileInput } from '@/validators/profile'
@@ -11,26 +11,15 @@ export async function GET() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const admin = createServiceClient()
-
-  let { data: dbUser } = await admin
+  const { data: dbUser } = await supabase
     .from('users')
     .select('id, role')
     .eq('auth_id', user.id)
     .single()
 
-  if (!dbUser) {
-    const { data: created } = await admin
-      .from('users')
-      .insert({ auth_id: user.id, email: user.email!, role: 'student', is_verified: true })
-      .select('id, role')
-      .single()
-    dbUser = created
-  }
-
   if (!dbUser) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
-  const { data: profile } = await admin
+  const { data: profile } = await supabase
     .from('student_profiles')
     .select('*')
     .eq('user_id', dbUser.id)
@@ -48,43 +37,16 @@ export async function POST(request: Request) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const admin = createServiceClient()
-
-  let { data: dbUser } = await admin
+  const { data: dbUser } = await supabase
     .from('users')
     .select('id')
     .eq('auth_id', user.id)
     .single()
 
-  // Auto-create user record if missing
-  if (!dbUser) {
-    const { data: created, error: createErr } = await admin
-      .from('users')
-      .insert({
-        auth_id: user.id,
-        email: user.email!,
-        role: 'student',
-        is_verified: true,
-      })
-      .select('id')
-      .single()
-
-    if (createErr) {
-      const { data: raceUser } = await admin
-        .from('users')
-        .select('id')
-        .eq('auth_id', user.id)
-        .single()
-      dbUser = raceUser
-    } else {
-      dbUser = created
-    }
-
-    if (!dbUser) return NextResponse.json({ error: 'Failed to create user record' }, { status: 500 })
-  }
+  if (!dbUser) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
   // Check if profile already exists
-  const { data: existing } = await admin
+  const { data: existing } = await supabase
     .from('student_profiles')
     .select('id')
     .eq('user_id', dbUser.id)
@@ -102,7 +64,7 @@ export async function POST(request: Request) {
 
   const is_complete = computeIsComplete(parsed.data as ProfileInput)
 
-  const { data: profile, error } = await admin
+  const { data: profile, error } = await supabase
     .from('student_profiles')
     .insert({
       user_id: dbUser.id,
@@ -129,26 +91,15 @@ export async function PATCH(request: Request) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const admin = createServiceClient()
-
-  let { data: dbUser } = await admin
+  const { data: dbUser } = await supabase
     .from('users')
     .select('id')
     .eq('auth_id', user.id)
     .single()
 
-  if (!dbUser) {
-    const { data: created } = await admin
-      .from('users')
-      .insert({ auth_id: user.id, email: user.email!, role: 'student', is_verified: true })
-      .select('id')
-      .single()
-    dbUser = created
-  }
-
   if (!dbUser) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
-  const { data: existing } = await admin
+  const { data: existing } = await supabase
     .from('student_profiles')
     .select('*')
     .eq('user_id', dbUser.id)
@@ -167,7 +118,7 @@ export async function PATCH(request: Request) {
   const merged = { ...existing, ...parsed.data }
   const is_complete = computeIsComplete(merged as ProfileInput)
 
-  const { data: profile, error } = await admin
+  const { data: profile, error } = await supabase
     .from('student_profiles')
     .update({ ...parsed.data, is_complete })
     .eq('user_id', dbUser.id)

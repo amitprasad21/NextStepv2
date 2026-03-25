@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import Papa from 'papaparse'
 
 interface College {
   id: string
@@ -68,6 +69,11 @@ export default function AdminCollegesPage() {
     image_paths: [] as string[],
   })
   const [imageUrlInput, setImageUrlInput] = useState('')
+
+  // CSV State
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [uploadingCsv, setUploadingCsv] = useState(false)
+  const [uploadStatus, setUploadStatus] = useState<string | null>(null)
 
   const fetchColleges = async () => {
     const res = await fetch('/api/admin/colleges')
@@ -162,6 +168,65 @@ export default function AdminCollegesPage() {
     }
   }
 
+  // Handle CSV Bulk Upload
+  const handleCsvUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploadingCsv(true)
+    setUploadStatus('Parsing CSV...')
+
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: async (results: any) => {
+        const rows = results.data as any[]
+        setUploadStatus(`Uploading ${rows.length} colleges...`)
+        let successCount = 0
+        let failCount = 0
+
+        for (const row of rows) {
+          try {
+            if (!row.name || !row.city || !row.state) {
+              failCount++
+              continue
+            }
+            const payload = {
+              name: row.name,
+              city: row.city,
+              state: row.state,
+              college_type: row.college_type || 'private',
+              description: row.description || '',
+              fee_min: row.fee_min ? Number(row.fee_min) : null,
+              fee_max: row.fee_max ? Number(row.fee_max) : null,
+              established_year: row.established_year ? Number(row.established_year) : null,
+              status: row.status || 'active',
+              daily_visit_capacity: row.daily_visit_capacity ? Number(row.daily_visit_capacity) : 5,
+              placement_rate: row.placement_rate ? Number(row.placement_rate) : null,
+            }
+            const res = await fetch('/api/admin/colleges', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload),
+            })
+            if (res.ok) successCount++
+            else failCount++
+          } catch (err) {
+            failCount++
+          }
+        }
+        setUploadStatus(`Done! Added: ${successCount}, Failed: ${failCount}`)
+        setUploadingCsv(false)
+        fetchColleges()
+        if (fileInputRef.current) fileInputRef.current.value = ''
+      },
+      error: () => {
+        setUploadStatus('Error parsing CSV file.')
+        setUploadingCsv(false)
+      }
+    })
+  }
+
   const handleDelete = async (id: string) => {
     setDeleteError(null)
     setColleges(prev => prev.map(c => c.id === id ? { ...c, is_deleted: true } : c))
@@ -205,27 +270,56 @@ export default function AdminCollegesPage() {
           <h1 className="text-2xl font-bold text-foreground sm:text-3xl" style={{ fontFamily: 'var(--font-sans)' }}>College Management</h1>
           <p className="mt-1 text-sm text-muted-foreground">Add, edit, and manage colleges on the platform.</p>
         </div>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className={`flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold shadow-md transition-all duration-300 hover:-translate-y-0.5 ${
-            showForm
-              ? 'border border-border bg-card text-foreground hover:bg-accent'
-              : 'bg-primary text-primary-foreground hover:bg-primary/90'
-          }`}
-        >
-          {showForm ? (
-            <>
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M12 4L4 12M4 4l8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
-              Cancel
-            </>
-          ) : (
-            <>
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 3.333v9.334M3.333 8h9.334" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
-              Add College
-            </>
-          )}
-        </button>
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <input
+              type="file"
+              accept=".csv"
+              className="hidden"
+              ref={fileInputRef}
+              onChange={handleCsvUpload}
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploadingCsv}
+              className="flex items-center gap-2 rounded-xl border border-border bg-card px-5 py-2.5 text-sm font-semibold text-muted-foreground shadow-sm hover:bg-accent transition-colors disabled:opacity-50"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 4L12 16M12 4L8 8M12 4L16 8M4 20H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              Bulk Import CSV
+            </button>
+          </div>
+          <button
+            onClick={() => setShowForm(!showForm)}
+            className={`flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold shadow-md transition-all duration-300 hover:-translate-y-0.5 ${
+              showForm
+                ? 'border border-border bg-card text-foreground hover:bg-accent'
+                : 'bg-primary text-primary-foreground hover:bg-primary/90'
+            }`}
+          >
+            {showForm ? (
+              <>
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M12 4L4 12M4 4l8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                Cancel
+              </>
+            ) : (
+              <>
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 3.333v9.334M3.333 8h9.334" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                Add College
+              </>
+            )}
+          </button>
+        </div>
       </div>
+
+      <AnimatePresence>
+        {uploadStatus && (
+          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="mt-4 flex items-center gap-3 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-medium text-blue-700">
+            {uploadingCsv && <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" className="opacity-25"/><path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="3" strokeLinecap="round" className="opacity-75"/></svg>}
+            {uploadStatus}
+            {!uploadingCsv && <button onClick={() => setUploadStatus(null)} className="ml-auto text-blue-500 hover:text-blue-800">Dismiss</button>}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {showForm && (

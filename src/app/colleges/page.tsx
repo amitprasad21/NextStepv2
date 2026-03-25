@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import Link from 'next/link'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
@@ -42,25 +43,29 @@ const FEE_RANGES = [
   { label: 'Above ₹10L', min: 1000000, max: undefined },
 ]
 
-export default function CollegesPage() {
+function CollegesContent() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
   const [colleges, setColleges] = useState<College[]>([])
   const [count, setCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const [showFilters, setShowFilters] = useState(false)
+  
   const [filters, setFilters] = useState({
-    search: '',
-    state: '',
-    stream: '',
-    course: '',
-    college_type: '',
-    fee_min: '' as string | number,
-    fee_max: '' as string | number,
-    has_hostel: false,
-    has_scholarship: false,
-    placement_min: '' as string | number,
-    sort_by: '',
-    sort_order: 'desc' as 'asc' | 'desc',
-    page: 1,
+    search: searchParams.get('search') || '',
+    state: searchParams.get('state') || '',
+    stream: searchParams.get('stream') || '',
+    course: searchParams.get('course') || '',
+    college_type: searchParams.get('college_type') || '',
+    fee_min: (searchParams.get('fee_min') || '') as string | number,
+    fee_max: (searchParams.get('fee_max') || '') as string | number,
+    has_hostel: searchParams.get('has_hostel') === 'true',
+    has_scholarship: searchParams.get('has_scholarship') === 'true',
+    placement_min: (searchParams.get('placement_min') || '') as string | number,
+    sort_by: searchParams.get('sort_by') || '',
+    sort_order: (searchParams.get('sort_order') as 'asc' | 'desc') || 'desc',
+    page: Number(searchParams.get('page')) || 1,
   })
 
   const fetchColleges = async () => {
@@ -82,6 +87,9 @@ export default function CollegesPage() {
       params.set('sort_by', filters.sort_by)
       params.set('sort_order', filters.sort_order)
     }
+
+    // Sync URL with filters
+    router.replace(`?${params.toString()}`, { scroll: false })
 
     const res = await fetch(`/api/colleges?${params}`)
     const data = await res.json()
@@ -432,5 +440,13 @@ export default function CollegesPage() {
         <Footer />
       </div>
     </div>
+  )
+}
+
+export default function CollegesPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading colleges...</div>}>
+      <CollegesContent />
+    </Suspense>
   )
 }

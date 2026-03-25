@@ -1,4 +1,4 @@
-import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
 /**
@@ -13,13 +13,11 @@ export async function PATCH(
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const admin = createServiceClient()
-
   // Verify notification belongs to this user
-  const { data: dbUser } = await admin.from('users').select('id').eq('auth_id', user.id).single()
+  const { data: dbUser } = await supabase.from('users').select('id').eq('auth_id', user.id).single()
   if (!dbUser) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
-  const { error } = await admin
+  const { error } = await supabase
     .from('notifications')
     .update({ is_read: true })
     .eq('id', id)
