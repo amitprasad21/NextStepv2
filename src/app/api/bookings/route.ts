@@ -6,9 +6,12 @@ import { createBookingSchema } from '@/validators/booking'
  * GET /api/bookings — Own bookings only.
  */
 export async function GET() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const authClient = await createClient()
+  const { data: { user } } = await authClient.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  // Use service client to bypass RLS
+  const supabase = createServiceClient()
 
   const { data: dbUser } = await supabase.from('users').select('id').eq('auth_id', user.id).single()
   if (!dbUser) return NextResponse.json({ error: 'User not found' }, { status: 404 })
@@ -25,12 +28,15 @@ export async function GET() {
 
 /**
  * POST /api/bookings — Create booking.
- * Checks: profile is_complete, capacity, no duplicate. NO notification here.
+ * Uses service client for all DB ops to bypass RLS.
  */
 export async function POST(request: Request) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const authClient = await createClient()
+  const { data: { user } } = await authClient.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  // Service client for all DB operations — bypasses RLS
+  const supabase = createServiceClient()
 
   const { data: dbUser } = await supabase.from('users').select('id').eq('auth_id', user.id).single()
   if (!dbUser) return NextResponse.json({ error: 'User not found' }, { status: 404 })
@@ -47,14 +53,14 @@ export async function POST(request: Request) {
   }
 
   // Freemium Logic: Check purchased credits first, then free limits
-  const hasPurchased = (profile.purchased_counselling ?? 0) > 0;
-  
+  const hasPurchased = (profile.purchased_counselling ?? 0) > 0
+
   if (!hasPurchased && (profile.used_free_counselling ?? 0) >= 3) {
     const { data: settings } = await supabase.from('platform_settings').select('counselling_price_inr').single()
-    return NextResponse.json({ 
-      error: 'Free limit reached', 
-      requires_payment: true, 
-      price: settings?.counselling_price_inr || 199 
+    return NextResponse.json({
+      error: 'Free limit reached',
+      requires_payment: true,
+      price: settings?.counselling_price_inr || 199,
     }, { status: 402 })
   }
 
@@ -74,9 +80,9 @@ export async function POST(request: Request) {
     .single()
 
   if (!slot) return NextResponse.json({ error: 'Slot not found' }, { status: 404 })
-  if (!slot.is_available) return NextResponse.json({ error: 'Slot not available' }, { status: 409 })
+  if (!slot.is_available) return NextResponse.json({ error: 'This slot is no longer available' }, { status: 409 })
   if (slot.booked_count >= slot.max_capacity) {
-    return NextResponse.json({ error: 'Slot not available.' }, { status: 409 })
+    return NextResponse.json({ error: 'This slot is fully booked' }, { status: 409 })
   }
 
   // Check duplicate
@@ -86,7 +92,7 @@ export async function POST(request: Request) {
     .eq('student_id', dbUser.id)
     .eq('slot_id', slot_id)
     .neq('status', 'cancelled')
-    .single()
+    .maybeSingle()
 
   if (existing) {
     return NextResponse.json(
@@ -103,7 +109,6 @@ export async function POST(request: Request) {
       is_available: slot.booked_count + 1 < slot.max_capacity,
     })
     .eq('id', slot_id)
-    .eq('booked_count', slot.booked_count) // Optimistic concurrency lock: Fails if another user booked it in the last millisecond
     .lt('booked_count', slot.max_capacity)
     .select()
     .single()
