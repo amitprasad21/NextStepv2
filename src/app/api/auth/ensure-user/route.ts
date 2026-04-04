@@ -33,10 +33,18 @@ export async function POST() {
       .eq('user_id', existing.id)
       .single()
 
+    const isComplete = profile?.is_complete ?? false
+
+    // Sync role + is_complete to JWT metadata so middleware can read them
+    await admin.auth.admin.updateUserById(user.id, {
+      app_metadata: { role: existing.role },
+      user_metadata: { is_complete: isComplete },
+    })
+
     return NextResponse.json({
       role: existing.role,
       isNew: false,
-      isComplete: profile?.is_complete ?? false,
+      isComplete,
     })
   }
 

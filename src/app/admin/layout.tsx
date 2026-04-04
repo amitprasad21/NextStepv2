@@ -85,7 +85,7 @@ export default async function AdminLayout({
       {/* Main content */}
       <div className="flex flex-1 flex-col">
         {/* Mobile capsule header */}
-        <div className="sticky top-0 z-50 flex justify-center px-3 pt-2.5 pb-1.5 bg-muted/50 md:hidden">
+        <div className="sticky top-0 z-50 flex justify-center px-3 pt-2.5 pb-1.5 md:hidden">
           <header
             className="w-full rounded-full border border-border/30 px-3 py-1.5 shadow-soft"
             style={{

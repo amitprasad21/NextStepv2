@@ -99,16 +99,8 @@ export async function GET(request: Request) {
         role = existingUser.role
       }
 
-      // Redirect based on role — ALWAYS read from DB, never metadata
-      if (role === 'admin') {
-        return NextResponse.redirect(new URL('/admin', origin))
-      }
-
-      if (isNewUser) {
-        return NextResponse.redirect(new URL('/onboarding', origin))
-      }
-
       // Existing student — check is_complete
+      let isComplete = false
       if (existingUser) {
         const { data: profile } = await admin
           .from('student_profiles')
@@ -116,9 +108,22 @@ export async function GET(request: Request) {
           .eq('user_id', existingUser.id)
           .single()
 
-        if (!profile || !profile.is_complete) {
-          return NextResponse.redirect(new URL('/onboarding', origin))
-        }
+        isComplete = profile?.is_complete ?? false
+      }
+
+      // Sync role + is_complete to JWT metadata so middleware can read them
+      await admin.auth.admin.updateUserById(authUser.id, {
+        app_metadata: { role },
+        user_metadata: { is_complete: isComplete },
+      })
+
+      // Redirect based on role — ALWAYS read from DB, never metadata
+      if (role === 'admin') {
+        return NextResponse.redirect(new URL('/admin', origin))
+      }
+
+      if (isNewUser || !isComplete) {
+        return NextResponse.redirect(new URL('/onboarding', origin))
       }
 
       return NextResponse.redirect(new URL('/', origin))
