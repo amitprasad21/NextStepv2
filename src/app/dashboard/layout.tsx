@@ -13,22 +13,28 @@ export default async function DashboardLayout({
 
   if (!user) redirect('/auth/login')
 
-  const { data: dbUser } = await supabase
+  // Use service client for DB reads (bypasses RLS)
+  const serviceClient = createServiceClient()
+
+  const { data: dbUser } = await serviceClient
     .from('users')
     .select('id, email, role')
     .eq('auth_id', user.id)
     .single()
 
+  // If admin accidentally lands on /dashboard, redirect to /admin
+  if (dbUser?.role === 'admin') redirect('/admin')
+
   const [profileRes, notifRes] = await Promise.all([
     dbUser
-      ? supabase
+      ? serviceClient
           .from('student_profiles')
           .select('full_name')
           .eq('user_id', dbUser.id)
           .single()
       : { data: null },
     dbUser
-      ? supabase
+      ? serviceClient
           .from('notifications')
           .select('*', { count: 'exact', head: true })
           .eq('student_id', dbUser.id)
@@ -55,7 +61,7 @@ export default async function DashboardLayout({
   return (
     <div className="flex min-h-screen flex-col">
       {/* Capsule navbar */}
-      <div className="sticky top-0 z-50 flex justify-center px-4 pt-3 pb-2 bg-muted/50">
+      <div className="sticky top-0 z-50 flex justify-center px-4 pt-3 pb-2">
         <header
           className="w-full max-w-5xl rounded-full border border-border/30 px-3 py-1.5 shadow-soft"
           style={{

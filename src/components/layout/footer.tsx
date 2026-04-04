@@ -67,9 +67,9 @@ export function Footer() {
             </h4>
             <ul className="mt-5 space-y-3.5">
               {[
-                { href: '/auth/login', label: 'Book Counselling', key: 'counselling' },
-                { href: '/auth/login', label: 'Schedule Visit', key: 'visit' },
-                { href: '/auth/login', label: 'Track Applications', key: 'track' },
+                { href: '/dashboard/bookings', label: 'Book Counselling', key: 'counselling' },
+                { href: '/dashboard/visits', label: 'Schedule Visit', key: 'visit' },
+                { href: '/dashboard', label: 'Track Applications', key: 'track' },
               ].map((link) => (
                 <li key={link.key}>
                   <Link
