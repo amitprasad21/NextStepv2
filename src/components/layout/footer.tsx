@@ -45,7 +45,6 @@ export function Footer() {
               {[
                 { href: '/colleges', label: 'Browse Colleges' },
                 { href: '/colleges/compare', label: 'Compare Colleges' },
-                { href: '/auth/login', label: 'Get Started' },
               ].map((link) => (
                 <li key={link.href}>
                   <Link

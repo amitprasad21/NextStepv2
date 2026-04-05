@@ -1,33 +1,33 @@
 @import "tailwindcss";
 
 :root {
-  /* NextStep palette — sage green, professional */
-  --background: #f6f8f2;
-  --foreground: #132a13;
-  --primary: #588157;
+  /* NextStep palette — #50786d base, professional teal-green system */
+  --background: #fafaf7;
+  --foreground: #1a1a1a;
+  --primary: #50786d;
   --primary-foreground: #ffffff;
-  --secondary: #90a955;
-  --secondary-foreground: #ffffff;
-  --muted: #ecf0e4;
-  --muted-foreground: #526b4e;
-  --border: #cdd8c2;
-  --ring: #588157;
+  --secondary: #6a9b8e;
+  --secondary-foreground: #1b3a32;
+  --muted: #e8f0ed;
+  --muted-foreground: #6b7280;
+  --border: #b3cdc5;
+  --ring: #50786d;
   --destructive: #b91c1c;
-  --accent: #e4ebd3;
-  --accent-foreground: #132a13;
+  --accent: #dceae5;
+  --accent-foreground: #1a1a1a;
   --card: #ffffff;
-  --card-foreground: #132a13;
+  --card-foreground: #1a1a1a;
   --radius: 0.75rem;
 
   /* Extended palette */
-  --primary-light: #e4eddc;
-  --primary-dark: #3b5b3a;
-  --surface-warm: #f0f4e8;
-  --surface-glass: rgba(246, 248, 242, 0.8);
-  --gold: #a3b86c;
-  --gold-light: #eef3da;
-  --orange: #4a7349;
-  --orange-light: #dde8d5;
+  --primary-light: #dceae5;
+  --primary-dark: #3d5c53;
+  --surface-warm: #ecf2ef;
+  --surface-glass: rgba(250, 250, 247, 0.85);
+  --gold: #6a9b8e;
+  --gold-light: #dceae5;
+  --orange: #50786d;
+  --orange-light: #dceae5;
 
   /* Stripe-inspired shadows — layered, realistic */
   --shadow-color: 220 3% 15%;
@@ -318,8 +318,8 @@ html[data-scroll-behavior="smooth"] {
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(88, 129, 87, 0.15); }
-  50% { box-shadow: 0 0 40px rgba(88, 129, 87, 0.25); }
+  0%, 100% { box-shadow: 0 0 20px rgba(80, 120, 109, 0.2); }
+  50% { box-shadow: 0 0 40px rgba(80, 120, 109, 0.3); }
 }
 
 @keyframes gradient-shift {
@@ -394,12 +394,12 @@ html[data-scroll-behavior="smooth"] {
 /* ---- Stripe-style gradient mesh background ---- */
 .mesh-gradient {
   background:
-    radial-gradient(at 27% 37%, rgba(88, 129, 87, 0.08) 0px, transparent 50%),
-    radial-gradient(at 97% 21%, rgba(144, 169, 85, 0.06) 0px, transparent 50%),
-    radial-gradient(at 52% 99%, rgba(163, 184, 108, 0.06) 0px, transparent 50%),
-    radial-gradient(at 10% 29%, rgba(74, 115, 73, 0.04) 0px, transparent 50%),
-    radial-gradient(at 97% 96%, rgba(106, 155, 104, 0.04) 0px, transparent 50%),
-    radial-gradient(at 33% 50%, rgba(88, 129, 87, 0.03) 0px, transparent 50%);
+    radial-gradient(at 27% 37%, rgba(80, 120, 109, 0.1) 0px, transparent 50%),
+    radial-gradient(at 97% 21%, rgba(106, 155, 142, 0.07) 0px, transparent 50%),
+    radial-gradient(at 52% 99%, rgba(220, 234, 229, 0.08) 0px, transparent 50%),
+    radial-gradient(at 10% 29%, rgba(61, 92, 83, 0.04) 0px, transparent 50%),
+    radial-gradient(at 97% 96%, rgba(80, 120, 109, 0.05) 0px, transparent 50%),
+    radial-gradient(at 33% 50%, rgba(106, 155, 142, 0.04) 0px, transparent 50%);
 }
 
 /* ---- Embla carousel ---- */
@@ -424,7 +424,7 @@ textarea {
 input:not([type="checkbox"]):not([type="radio"]):focus,
 select:focus,
 textarea:focus {
-  box-shadow: 0 0 0 3px rgba(88, 129, 87, 0.1);
+  box-shadow: 0 0 0 3px rgba(80, 120, 109, 0.2);
 }
 
 /* ---- Link underline animation ---- */

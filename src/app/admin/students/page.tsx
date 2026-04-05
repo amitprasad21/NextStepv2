@@ -172,8 +172,8 @@ export default function AdminStudentsPage() {
                       )}
                       {(p?.budget_min != null || p?.budget_max != null) && (
                         <span className="inline-flex items-center gap-1.5 rounded-lg bg-muted/60 px-2.5 py-1 text-[11px] text-muted-foreground">
-                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" className="text-primary/60"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
-                          ₹{(p.budget_min ?? 0).toLocaleString('en-IN')} – ₹{(p.budget_max ?? 0).toLocaleString('en-IN')}/yr
+                          <span className="font-bold text-primary">₹</span>
+                          {(p.budget_min ?? 0).toLocaleString('en-IN')} – ₹{(p.budget_max ?? 0).toLocaleString('en-IN')}/yr
                         </span>
                       )}
                     </div>
