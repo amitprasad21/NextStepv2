@@ -5,18 +5,31 @@ import { createCourseSchema } from '@/validators/college'
 
 /**
  * GET /api/admin/streams — All courses/streams with college name.
+ * Optional: ?college_id=UUID to filter by college.
  */
-export async function GET() {
+export async function GET(request: Request) {
   const { error } = await verifyAdmin()
   if (error) return error
 
+  const { searchParams } = new URL(request.url)
+  const collegeId = searchParams.get('college_id')
+
   const supabase = createServiceClient()
-  const { data, error: dbError } = await supabase
+  let query = supabase
     .from('college_courses')
     .select('*, colleges(id, name)')
     .order('created_at', { ascending: false })
 
-  if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 })
+  if (collegeId) {
+    query = query.eq('college_id', collegeId)
+  }
+
+  const { data, error: dbError } = await query
+
+  if (dbError) {
+    console.error('DB error:', dbError.message)
+    return NextResponse.json({ error: 'Failed to fetch streams' }, { status: 500 })
+  }
   return NextResponse.json({ data })
 }
 

@@ -91,6 +91,49 @@ export default function AdminCollegesPage() {
   })
   const [imageUrlInput, setImageUrlInput] = useState('')
 
+  // ── Course management state (inline course editor) ────────────
+  const [courses, setCourses] = useState<CourseEntry[]>([])               // new courses to save
+  const [existingCourses, setExistingCourses] = useState<CourseEntry[]>([]) // already-saved courses (edit mode)
+  const [showAddCourse, setShowAddCourse] = useState(false)
+  const [newCourse, setNewCourse] = useState<CourseEntry>({ ...EMPTY_COURSE })
+
+  const fetchCoursesForCollege = async (collegeId: string) => {
+    try {
+      const res = await fetch(`/api/admin/streams?college_id=${collegeId}`)
+      const data = await res.json()
+      setExistingCourses(data.data ?? [])
+    } catch {
+      setExistingCourses([])
+    }
+  }
+
+  const deleteExistingCourse = async (courseId: string) => {
+    const prev = existingCourses
+    setExistingCourses(existingCourses.filter(c => c.id !== courseId))
+    const res = await fetch(`/api/admin/streams/${courseId}`, { method: 'DELETE' })
+    if (!res.ok) setExistingCourses(prev)
+  }
+
+  const addNewCourse = () => {
+    if (!newCourse.course_name) return
+    setCourses(prev => [...prev, { ...newCourse }])
+    setNewCourse({ ...EMPTY_COURSE })
+    setShowAddCourse(false)
+  }
+
+  const removeNewCourse = (index: number) => {
+    setCourses(prev => prev.filter((_, i) => i !== index))
+  }
+
+  const toggleNewCourseExam = (exam: string) => {
+    setNewCourse(prev => ({
+      ...prev,
+      exams_accepted: prev.exams_accepted.includes(exam)
+        ? prev.exams_accepted.filter(e => e !== exam)
+        : [...prev.exams_accepted, exam],
+    }))
+  }
+
   const fetchColleges = async () => {
     const res = await fetch('/api/admin/colleges')
     const data = await res.json()
