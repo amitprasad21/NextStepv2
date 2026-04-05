@@ -11,6 +11,7 @@ import { StatCounter } from '@/components/shared/stat-counter'
 import { TestimonialCarousel } from '@/components/shared/testimonial-carousel'
 import { CollegeCard } from '@/components/shared/college-card'
 import RotatingText from '@/components/shared/rotating-text'
+import { HeroIllustration } from '@/components/shared/hero-illustration'
 import { createClient } from '@/lib/supabase/client'
 
 interface FeaturedCollege {
@@ -47,200 +48,193 @@ export function LandingClient({ colleges }: { colleges: FeaturedCollege[] }) {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <Navbar variant="transparent" />
+      <Navbar variant="solid" />
 
-      {/* ============ HERO — Stripe-inspired ============ */}
-      <section className="relative flex min-h-[92vh] items-center overflow-hidden bg-primary-dark">
-        {/* Mesh gradient background — Stripe style */}
+      {/* ============ HERO — Split layout with illustration ============ */}
+      <section className="relative flex min-h-[85vh] items-center overflow-hidden bg-primary-dark">
+        {/* Gradient blobs */}
         <div className="absolute inset-0">
-          <div className="absolute -left-40 -top-40 h-[600px] w-[600px] rounded-full bg-[#588157]/25 blur-[160px] animate-breathe" />
-          <div className="absolute right-0 top-0 h-[500px] w-[500px] rounded-full bg-[#6a9b68]/18 blur-[140px] animate-breathe" style={{ animationDelay: '2s' }} />
-          <div className="absolute bottom-0 left-1/3 h-[400px] w-[400px] rounded-full bg-[#90a955]/12 blur-[130px] animate-breathe" style={{ animationDelay: '4s' }} />
+          <div className="absolute -left-40 -top-40 h-[600px] w-[600px] rounded-full bg-[#588157]/20 blur-[160px] animate-breathe" />
+          <div className="absolute right-0 top-0 h-[500px] w-[500px] rounded-full bg-[#6a9b68]/14 blur-[140px] animate-breathe" style={{ animationDelay: '2s' }} />
         </div>
-
-        {/* Stripe-style subtle grid */}
-        <div
-          className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage: `linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px)`,
-            backgroundSize: '64px 64px',
-          }}
-        />
 
         {/* Grain texture */}
         <div className="grain absolute inset-0" />
 
         <motion.div style={{ opacity: heroOpacity, y: heroY }} className="relative mx-auto max-w-7xl px-6 py-24 w-full">
-          <div className="mx-auto max-w-3xl text-center">
-            {/* Badge */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.04] px-4 py-1.5 text-[13px] font-medium text-white/60 backdrop-blur-sm">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#90a955] animate-pulse" />
-                Trusted by 10,000+ students across India
-              </span>
-            </motion.div>
+          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-5 lg:gap-8">
 
-            {/* Heading with rotating text */}
-            <motion.h1
-              initial={{ opacity: 0, y: 25 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-              className="mt-8 text-[2.75rem] font-bold leading-[1.08] text-white sm:text-[3.5rem] lg:text-[4.25rem] tracking-tight"
-              style={{ fontFamily: 'var(--font-serif)' }}
-            >
-              Your college journey,{' '}
-              <RotatingText
-                texts={['simplified', 'sorted', 'streamlined', 'secured']}
-                mainClassName="px-3 sm:px-4 md:px-5 bg-white/[0.12] text-white border border-white/[0.15] overflow-hidden py-1 sm:py-1.5 md:py-2 justify-center rounded-xl inline-flex backdrop-blur-sm"
-                staggerFrom="last"
-                initial={{ y: '100%' }}
-                animate={{ y: 0 }}
-                exit={{ y: '-120%' }}
-                staggerDuration={0.025}
-                splitLevelClassName="overflow-hidden pb-0.5 sm:pb-1 md:pb-1"
-                transition={{ type: 'spring', damping: 30, stiffness: 400 }}
-                rotationInterval={2500}
-              />
-            </motion.h1>
-
-            {/* Subtitle */}
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.25 }}
-              className="mt-6 text-lg leading-relaxed text-white/45 sm:text-xl max-w-2xl mx-auto"
-            >
-              Discover colleges, book expert counselling sessions, and schedule
-              campus visits — all in one platform built for Indian students.
-            </motion.p>
-
-            {/* CTA Buttons — Stripe style */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.4 }}
-              className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
-            >
-              <Link
-                href={ctaHref}
-                className="group relative inline-flex items-center justify-center gap-2.5 rounded-full bg-white px-8 py-3.5 text-[15px] font-semibold text-primary-dark shadow-lg shadow-black/10 transition-all duration-300 hover:shadow-xl hover:shadow-black/15 hover:-translate-y-0.5 active:translate-y-0"
+            {/* ---- Left: Text content (60%) ---- */}
+            <div className="lg:col-span-3 text-center lg:text-left">
+              {/* Heading */}
+              <motion.h1
+                initial={{ opacity: 0, y: 25 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                className="text-[2.5rem] font-bold leading-[1.1] text-white sm:text-[3.25rem] lg:text-[4rem] tracking-tight"
+                style={{ fontFamily: 'var(--font-serif)' }}
               >
-                {isLoggedIn ? 'Go to Dashboard' : 'Get started'}
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="transition-transform duration-300 group-hover:translate-x-0.5">
-                  <path d="M3.333 8h9.334M8.667 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </Link>
-              <Link
-                href="/colleges"
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 px-8 py-3.5 text-[15px] font-medium text-white/80 backdrop-blur-sm transition-all duration-300 hover:bg-white/[0.06] hover:border-white/25 hover:text-white"
+                Find your perfect college,
+                <br />
+                <RotatingText
+                  texts={['simplified', 'sorted', 'secured']}
+                  mainClassName="px-3 sm:px-4 md:px-5 bg-white/[0.12] text-white border border-white/[0.15] overflow-hidden py-1 sm:py-1.5 md:py-2 justify-center rounded-xl inline-flex backdrop-blur-sm mt-2"
+                  staggerFrom="last"
+                  initial={{ y: '100%' }}
+                  animate={{ y: 0 }}
+                  exit={{ y: '-120%' }}
+                  staggerDuration={0.025}
+                  splitLevelClassName="overflow-hidden pb-0.5 sm:pb-1 md:pb-1"
+                  transition={{ type: 'spring', damping: 30, stiffness: 400 }}
+                  rotationInterval={2500}
+                />
+              </motion.h1>
+
+              {/* Subtitle */}
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.15 }}
+                className="mt-6 text-lg leading-relaxed text-white/50 sm:text-xl max-w-xl mx-auto lg:mx-0"
               >
-                Browse colleges
-                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-white/40">
-                  <path d="M3.333 8h9.334M8.667 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </Link>
-            </motion.div>
+                Compare colleges, book counselling, and schedule campus visits — all in one place.
+              </motion.p>
 
-            {/* Trust metrics — Stripe-style inline */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1, delay: 0.7 }}
-              className="mt-14 flex items-center justify-center gap-8 sm:gap-12"
-            >
-              {[
-                { value: '500+', label: 'Colleges' },
-                { value: '10K+', label: 'Students' },
-                { value: '98%', label: 'Satisfaction' },
-              ].map((item, i) => (
-                <div key={item.label} className="flex items-center gap-3">
-                  {i > 0 && <div className="h-4 w-px bg-white/10 -ml-4 sm:-ml-6" />}
-                  <div className={i > 0 ? 'pl-4 sm:pl-6' : ''}>
-                    <p className="text-xl font-bold text-white sm:text-2xl" style={{ fontFamily: 'var(--font-sans)' }}>{item.value}</p>
-                    <p className="text-xs text-white/35 font-medium">{item.label}</p>
-                  </div>
-                </div>
-              ))}
-            </motion.div>
-          </div>
-
-          {/* Floating product preview cards — Stripe style */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.2, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="relative mx-auto mt-16 hidden max-w-4xl md:block"
-          >
-            <div className="relative mx-auto flex justify-center gap-4">
-              {/* Card 1 */}
+              {/* CTA Buttons */}
               <motion.div
-                animate={{ y: [0, -6, 0] }}
-                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-                className="w-56 rounded-2xl border border-white/[0.08] bg-white/[0.04] p-5 backdrop-blur-xl"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.3 }}
+                className="mt-10 flex flex-col items-center gap-4 sm:flex-row lg:justify-start sm:justify-center"
               >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/20">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="text-primary-foreground/80">
-                      <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-white/90">500+ Colleges</p>
-                    <p className="text-[11px] text-white/40">All states</p>
-                  </div>
-                </div>
+                <Link
+                  href={ctaHref}
+                  className="group relative inline-flex items-center justify-center gap-2.5 rounded-full bg-white px-8 py-3.5 text-[15px] font-semibold text-primary-dark shadow-lg shadow-black/10 transition-all duration-300 hover:shadow-xl hover:shadow-black/15 hover:-translate-y-0.5 active:translate-y-0"
+                >
+                  {isLoggedIn ? 'Go to Dashboard' : 'Get started'}
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="transition-transform duration-300 group-hover:translate-x-0.5">
+                    <path d="M3.333 8h9.334M8.667 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </Link>
+                <Link
+                  href="/colleges"
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 px-8 py-3.5 text-[15px] font-medium text-white/80 backdrop-blur-sm transition-all duration-300 hover:bg-white/[0.06] hover:border-white/25 hover:text-white"
+                >
+                  Browse colleges
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-white/40">
+                    <path d="M3.333 8h9.334M8.667 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </Link>
               </motion.div>
 
-              {/* Card 2 */}
+              {/* Trust metrics */}
               <motion.div
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
-                className="w-56 rounded-2xl border border-white/[0.08] bg-white/[0.04] p-5 backdrop-blur-xl"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 1, delay: 0.5 }}
+                className="mt-12 flex items-center justify-center gap-8 sm:gap-12 lg:justify-start"
               >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#588157]/20">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="text-white/80">
-                      <path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M22 4L12 14.01l-3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
+                {[
+                  { value: '500+', label: 'Colleges' },
+                  { value: '10K+', label: 'Students' },
+                  { value: '98%', label: 'Satisfaction' },
+                ].map((item, i) => (
+                  <div key={item.label} className="flex items-center gap-3">
+                    {i > 0 && <div className="h-4 w-px bg-white/10 -ml-4 sm:-ml-6" />}
+                    <div className={i > 0 ? 'pl-4 sm:pl-6' : ''}>
+                      <p className="text-xl font-bold text-white sm:text-2xl" style={{ fontFamily: 'var(--font-sans)' }}>{item.value}</p>
+                      <p className="text-xs text-white/35 font-medium">{item.label}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-semibold text-white/90">Booking Confirmed</p>
-                    <p className="text-[11px] text-white/40">Session ready</p>
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Card 3 */}
-              <motion.div
-                animate={{ y: [0, -7, 0] }}
-                transition={{ duration: 5.5, repeat: Infinity, ease: 'easeInOut', delay: 0.8 }}
-                className="w-56 rounded-2xl border border-white/[0.08] bg-white/[0.04] p-5 backdrop-blur-xl"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#588157]/15">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="text-white/70">
-                      <path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                      <circle cx="12" cy="11" r="3" stroke="currentColor" strokeWidth="1.5"/>
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-white/90">Campus Visit</p>
-                    <p className="text-[11px] text-white/40">IIT Delhi — Scheduled</p>
-                  </div>
-                </div>
+                ))}
               </motion.div>
             </div>
-          </motion.div>
+
+            {/* ---- Right: Illustration (40%) ---- */}
+            <motion.div
+              initial={{ opacity: 0, x: 60 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              className="lg:col-span-2 flex justify-center lg:justify-end"
+            >
+              <HeroIllustration className="w-full max-w-[420px] lg:max-w-none" />
+            </motion.div>
+
+          </div>
         </motion.div>
 
-        {/* Solid end of hero section */}
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-border/30" />
+        {/* Scroll-down indicator */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1, duration: 0.8 }}
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer"
+          onClick={() => {
+            const heroSection = document.querySelector('#featured-colleges')
+            heroSection?.scrollIntoView({ behavior: 'smooth' })
+          }}
+        >
+          <span className="text-[11px] font-medium uppercase tracking-[0.15em] text-white/30">Scroll</span>
+          <motion.div
+            animate={{ y: [0, 6, 0] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="text-white/30">
+              <path d="M7 13l5 5 5-5M7 7l5 5 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </motion.div>
+        </motion.div>
       </section>
+
+      {/* ============ FEATURED COLLEGES ============ */}
+      {colleges.length > 0 && (
+        <section id="featured-colleges" className="relative border-t border-border/40 py-24 px-6">
+          <div className="mx-auto max-w-6xl">
+            <AnimatedSection className="flex flex-col items-center justify-between gap-5 sm:flex-row">
+              <div>
+                <span className="inline-block rounded-full border border-primary/15 bg-primary/[0.04] px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary">
+                  Featured
+                </span>
+                <h2 className="mt-5 text-3xl font-bold text-foreground sm:text-4xl tracking-tight" style={{ fontFamily: 'var(--font-serif)' }}>
+                  Top colleges on NextStep
+                </h2>
+              </div>
+              <Link
+                href="/colleges"
+                className="group inline-flex items-center gap-2 rounded-full border border-border bg-card px-6 py-2.5 text-sm font-semibold text-foreground shadow-soft transition-all hover:shadow-lifted hover:border-primary/20 hover:-translate-y-0.5"
+              >
+                View all colleges
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-muted-foreground transition-all group-hover:translate-x-0.5 group-hover:text-primary">
+                  <path d="M3.333 8h9.334M8.667 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </Link>
+            </AnimatedSection>
+
+            <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {colleges.map((college, i) => (
+                <CollegeCard
+                  key={college.id}
+                  id={college.id}
+                  name={college.name}
+                  city={college.city}
+                  state={college.state}
+                  feeMin={college.fee_min}
+                  feeMax={college.fee_max}
+                  description={college.description}
+                  placementRate={college.placement_rate}
+                  collegeType={college.college_type}
+                  imagePaths={college.image_paths}
+                  establishedYear={college.established_year}
+                  accreditation={college.accreditation}
+                  hostelAvailable={college.hostel_available}
+                  scholarship={college.scholarship}
+                  index={i}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ============ FEATURES — Stripe bento style ============ */}
       <section className="relative py-32 px-6 border-t border-border/30">
@@ -388,56 +382,6 @@ export function LandingClient({ colleges }: { colleges: FeaturedCollege[] }) {
           </div>
         </div>
       </section>
-
-      {/* ============ FEATURED COLLEGES ============ */}
-      {colleges.length > 0 && (
-        <section className="relative border-t border-border/40 py-32 px-6">
-          <div className="mx-auto max-w-6xl">
-            <AnimatedSection className="flex flex-col items-center justify-between gap-5 sm:flex-row">
-              <div>
-                <span className="inline-block rounded-full border border-primary/15 bg-primary/[0.04] px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary">
-                  Featured
-                </span>
-                <h2 className="mt-5 text-3xl font-bold text-foreground sm:text-4xl tracking-tight" style={{ fontFamily: 'var(--font-serif)' }}>
-                  Top colleges on NextStep
-                </h2>
-              </div>
-              <Link
-                href="/colleges"
-                className="group inline-flex items-center gap-2 rounded-full border border-border bg-card px-6 py-2.5 text-sm font-semibold text-foreground shadow-soft transition-all hover:shadow-lifted hover:border-primary/20 hover:-translate-y-0.5"
-              >
-                View all colleges
-                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-muted-foreground transition-all group-hover:translate-x-0.5 group-hover:text-primary">
-                  <path d="M3.333 8h9.334M8.667 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </Link>
-            </AnimatedSection>
-
-            <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {colleges.map((college, i) => (
-                <CollegeCard
-                  key={college.id}
-                  id={college.id}
-                  name={college.name}
-                  city={college.city}
-                  state={college.state}
-                  feeMin={college.fee_min}
-                  feeMax={college.fee_max}
-                  description={college.description}
-                  placementRate={college.placement_rate}
-                  collegeType={college.college_type}
-                  imagePaths={college.image_paths}
-                  establishedYear={college.established_year}
-                  accreditation={college.accreditation}
-                  hostelAvailable={college.hostel_available}
-                  scholarship={college.scholarship}
-                  index={i}
-                />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* ============ TESTIMONIALS ============ */}
       <section className="relative border-t border-border/40 py-32 overflow-hidden">
