@@ -15,13 +15,12 @@ export async function GET() {
     const latencyMs = Date.now() - start
 
     if (error) {
+      console.error('Health check DB error:', error.message)
       return NextResponse.json({
         status: 'degraded',
         db: 'error',
-        dbError: error.message,
         latencyMs,
         timestamp: new Date().toISOString(),
-        version: process.env.npm_package_version ?? '0.1.0',
       }, { status: 503 })
     }
 
@@ -39,7 +38,6 @@ export async function GET() {
         db: 'disconnected',
         latencyMs,
         timestamp: new Date().toISOString(),
-        message: err instanceof Error ? err.message : 'Unknown error',
       },
       { status: 500 }
     )

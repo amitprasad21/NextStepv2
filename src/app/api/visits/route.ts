@@ -69,64 +69,35 @@ export async function POST(request: Request) {
 
   const { college_id, visit_date, visit_time } = parsed.data
 
-  // Check college is active
-  const { data: college } = await supabase
-    .from('colleges')
-    .select('id, daily_visit_capacity, status')
-    .eq('id', college_id)
-    .single()
+  // Atomic visit: capacity check + insert + credit adjustment
+  // all in one DB transaction via RPC — prevents race conditions.
+  const usePurchased = (profile.purchased_visits ?? 0) > 0
 
-  if (!college || college.status !== 'active') {
-    return NextResponse.json({ error: 'College not found or inactive' }, { status: 404 })
-  }
+  const { data: rpcResult, error: rpcError } = await supabase.rpc('create_visit_atomic', {
+    p_student_id: dbUser.id,
+    p_college_id: college_id,
+    p_visit_date: visit_date,
+    p_visit_time: visit_time || null,
+    p_use_purchased: usePurchased,
+  })
 
-  // Check daily capacity
-  const { count } = await supabase
-    .from('college_visits')
-    .select('*', { count: 'exact', head: true })
-    .eq('college_id', college_id)
-    .eq('visit_date', visit_date)
-    .neq('status', 'cancelled')
-
-  if ((count ?? 0) >= college.daily_visit_capacity) {
-    return NextResponse.json(
-      { error: 'Visit capacity for this date is full.' },
-      { status: 409 }
-    )
-  }
-
-  const { data: visit, error } = await supabase
-    .from('college_visits')
-    .insert({
-      student_id: dbUser.id,
-      college_id,
-      visit_date,
-      visit_time: visit_time || null,
-      status: 'pending',
-    })
-    .select()
-    .single()
-
-  if (error) {
-    if (error.code === '23505') {
-      return NextResponse.json({ error: 'You already have a visit request for this college on this date.' }, { status: 409 })
-    }
-    console.error('DB error:', error.message)
+  if (rpcError) {
+    console.error('Visit RPC error:', rpcError.message)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 
-  // Increment odometer or decrement purchased credits
-  if ((profile.purchased_visits ?? 0) > 0) {
-    await supabase
-      .from('student_profiles')
-      .update({ purchased_visits: profile.purchased_visits - 1 })
-      .eq('user_id', dbUser.id)
-  } else {
-    await supabase
-      .from('student_profiles')
-      .update({ used_free_visits: (profile.used_free_visits ?? 0) + 1 })
-      .eq('user_id', dbUser.id)
+  const result = rpcResult as { visit_id?: string; error?: string; status: number }
+
+  if (result.error) {
+    return NextResponse.json({ error: result.error }, { status: result.status })
   }
+
+  // Fetch the full visit record to return to the client
+  const { data: visit } = await supabase
+    .from('college_visits')
+    .select('*, college:colleges(id, name, city, state)')
+    .eq('id', result.visit_id)
+    .single()
 
   return NextResponse.json({ data: visit }, { status: 201 })
 }

@@ -57,49 +57,70 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Payment amount mismatch' }, { status: 400 })
     }
 
-    // Check for duplicate payment (replay attack prevention)
-    const { count: existingTxn } = await serviceClient
-      .from('payment_transactions')
-      .select('*', { count: 'exact', head: true })
-      .eq('razorpay_payment_id', razorpay_payment_id)
-
-    if ((existingTxn ?? 0) > 0) {
-      return NextResponse.json({ error: 'Payment already processed' }, { status: 409 })
-    }
-
-    // Payment is valid. Grant credit to user.
+    // Resolve the internal user ID
     const { data: dbUser } = await supabase.from('users').select('id').eq('auth_id', user.id).single()
     if (!dbUser) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
-    // Define which column to top-up based on product type
+    // ── Idempotent insert-first pattern ──────────────────────────────
+    // Insert the transaction FIRST. The UNIQUE constraint on
+    // razorpay_payment_id guarantees only one request wins the race.
+    // If the insert succeeds → we own this payment, grant credit.
+    // If it conflicts    → another request already handled it, return 409.
+    const { data: trx, error: txnInsertError } = await serviceClient
+      .from('payment_transactions')
+      .insert({
+        student_id: dbUser.id,
+        razorpay_order_id,
+        razorpay_payment_id,
+        amount_inr: expectedAmountInr,
+        item_type: type,
+        status: 'success',
+      })
+      .select()
+      .single()
+
+    if (txnInsertError) {
+      // 23505 = unique_violation → payment already processed (replay/race)
+      if (txnInsertError.code === '23505') {
+        return NextResponse.json({ error: 'Payment already processed' }, { status: 409 })
+      }
+      console.error('Transaction insert error:', txnInsertError.message)
+      return NextResponse.json({ error: 'Payment processing failed' }, { status: 500 })
+    }
+
+    // ── Grant credit (only reached by the single winning request) ────
     const column = type === 'visit' ? 'purchased_visits' : 'purchased_counselling'
 
-    // Atomic increment using RPC or direct SQL-style increment
+    // Atomic increment using RPC
     const { error: updateError } = await serviceClient.rpc('increment_field', {
       table_name: 'student_profiles',
       field_name: column,
       row_user_id: dbUser.id,
     })
 
-    // Fallback: if RPC doesn't exist, use read-then-write with service client
+    // Fallback: if RPC doesn't exist, use SQL-expression-style increment
     if (updateError) {
-      const { data: profile } = await serviceClient.from('student_profiles').select(column).eq('user_id', dbUser.id).single()
+      const { data: profile } = await serviceClient
+        .from('student_profiles')
+        .select(column)
+        .eq('user_id', dbUser.id)
+        .single()
       const currentVal = (profile as Record<string, number>)?.[column] ?? 0
-      await serviceClient
+      const { error: fallbackError } = await serviceClient
         .from('student_profiles')
         .update({ [column]: currentVal + 1 })
         .eq('user_id', dbUser.id)
-    }
 
-    // Insert Transaction
-    const { data: trx } = await serviceClient.from('payment_transactions').insert({
-      student_id: dbUser.id,
-      razorpay_order_id,
-      razorpay_payment_id,
-      amount_inr: expectedAmountInr,
-      item_type: type,
-      status: 'success'
-    }).select().single()
+      if (fallbackError) {
+        console.error('Credit increment failed:', fallbackError.message)
+        // Mark the transaction as needing manual review
+        await serviceClient
+          .from('payment_transactions')
+          .update({ status: 'credit_pending' })
+          .eq('id', trx.id)
+        return NextResponse.json({ error: 'Payment recorded but credit failed. Contact support.' }, { status: 500 })
+      }
+    }
 
     // Notify User
     try {

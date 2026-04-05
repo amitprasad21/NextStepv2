@@ -189,20 +189,47 @@ export default function BookingsPage() {
     setSubmitting(false)
   }
 
-  // Group slots by date
+  // ── Local time helpers ─────────────────────────────────────────
+  // Use LOCAL date (not UTC) to avoid timezone off-by-one issues.
+  // e.g. at 11:30 PM IST, toISOString() returns next day in UTC.
+  const getLocalDateStr = () => {
+    const d = new Date()
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+  }
+
+  const [todayStr, setTodayStr] = useState(getLocalDateStr)
+  const [now, setNow] = useState(() => new Date())
+
+  useEffect(() => {
+    // Update current time every 60s so past slots disappear in real-time
+    const timer = setInterval(() => {
+      setNow(new Date())
+      setTodayStr(getLocalDateStr())
+    }, 60000)
+    return () => clearInterval(timer)
+  }, [])
+
+  // ── Slot validity filter ─────────────────────────────────────
+  // A slot is "valid" (bookable) only if slot_date+slot_time > now.
+  // This single rule handles: past days, today's past hours, and future days.
+  const isSlotInFuture = (slot: Slot) => {
+    // Build a local datetime from slot_date + slot_time
+    // slot_date = "2026-04-06", slot_time = "17:00" or "17:00:00"
+    const slotDateTime = new Date(`${slot.slot_date}T${slot.slot_time}`)
+    return slotDateTime > now
+  }
+
+  // Filter ALL fetched slots — remove past ones BEFORE grouping
+  const futureSlots = slots.filter(isSlotInFuture)
+
+  // Group only valid future slots by date
   const slotsByDate: Record<string, Slot[]> = {}
-  slots.forEach(s => {
+  futureSlots.forEach(s => {
     if (!slotsByDate[s.slot_date]) slotsByDate[s.slot_date] = []
     slotsByDate[s.slot_date].push(s)
   })
 
   const dateEntries = Object.entries(slotsByDate).slice(0, 7)
-
-  const [todayStr, setTodayStr] = useState('')
-
-  useEffect(() => {
-    setTodayStr(new Date().toISOString().split('T')[0])
-  }, [])
 
   const formatDate = (date: string) =>
     new Date(date + 'T00:00:00').toLocaleDateString('en-IN', { weekday: 'short', month: 'short', day: 'numeric' })
@@ -218,6 +245,7 @@ export default function BookingsPage() {
 
   const isToday = (date: string) => date === todayStr
 
+  // Selected date's slots are already filtered (they come from slotsByDate which only has future slots)
   const selectedDateSlots = selectedDate ? slotsByDate[selectedDate] ?? [] : []
 
   const activeBookings = bookings.filter(b => b.status === 'pending' || b.status === 'confirmed')
@@ -349,6 +377,7 @@ export default function BookingsPage() {
                     <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Select a Date</p>
                     <div className="flex gap-2 overflow-x-auto pb-2">
                       {dateEntries.map(([date, dateSlots]) => {
+                        // dateSlots already contains only future slots (pre-filtered above)
                         const availableCount = dateSlots.filter(s => s.booked_count < s.max_capacity).length
                         const isSelected = selectedDate === date
                         return (

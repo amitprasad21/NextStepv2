@@ -75,95 +75,37 @@ export async function POST(request: Request) {
 
   const { slot_id, booking_type, context_college_id, preferred_date, preferred_time } = parsed.data
 
-  // Check slot availability and capacity
-  const { data: slot } = await supabase
-    .from('counselling_slots')
-    .select('*')
-    .eq('id', slot_id)
-    .single()
+  // Atomic booking: capacity check + insert + slot update + credit adjustment
+  // all in one DB transaction via RPC — prevents race conditions.
+  const usePurchased = (profile.purchased_counselling ?? 0) > 0
 
-  if (!slot) return NextResponse.json({ error: 'Slot not found' }, { status: 404 })
-  if (!slot.is_available) return NextResponse.json({ error: 'This slot is no longer available' }, { status: 409 })
-  if (slot.booked_count >= slot.max_capacity) {
-    return NextResponse.json({ error: 'This slot is fully booked' }, { status: 409 })
-  }
+  const { data: rpcResult, error: rpcError } = await supabase.rpc('create_booking_atomic', {
+    p_student_id: dbUser.id,
+    p_slot_id: slot_id,
+    p_booking_type: booking_type,
+    p_context_college_id: context_college_id || null,
+    p_preferred_date: preferred_date,
+    p_preferred_time: preferred_time,
+    p_use_purchased: usePurchased,
+  })
 
-  // Check duplicate
-  const { data: existing } = await supabase
-    .from('counselling_bookings')
-    .select('id')
-    .eq('student_id', dbUser.id)
-    .eq('slot_id', slot_id)
-    .neq('status', 'cancelled')
-    .maybeSingle()
-
-  if (existing) {
-    return NextResponse.json(
-      { error: 'You already have a booking at this time.' },
-      { status: 409 }
-    )
-  }
-
-  // Atomically increment booked_count only if capacity not exceeded
-  const { data: updatedSlot, error: slotError } = await supabase
-    .from('counselling_slots')
-    .update({
-      booked_count: slot.booked_count + 1,
-      is_available: slot.booked_count + 1 < slot.max_capacity,
-    })
-    .eq('id', slot_id)
-    .lt('booked_count', slot.max_capacity)
-    .select()
-    .single()
-
-  if (slotError || !updatedSlot) {
-    return NextResponse.json({ error: 'Slot is no longer available.' }, { status: 409 })
-  }
-
-  // Create booking
-  const { data: booking, error: bookingError } = await supabase
-    .from('counselling_bookings')
-    .insert({
-      student_id: dbUser.id,
-      slot_id,
-      booking_type,
-      context_college_id: context_college_id || null,
-      preferred_date,
-      preferred_time,
-      status: 'pending',
-    })
-    .select()
-    .single()
-
-  if (bookingError) {
-    // Rollback slot count on failure
-    await supabase
-      .from('counselling_slots')
-      .update({
-        booked_count: updatedSlot.booked_count - 1,
-        is_available: true,
-      })
-      .eq('id', slot_id)
-
-    if (bookingError.code === '23505') {
-      return NextResponse.json({ error: 'You already have a booking at this time.' }, { status: 409 })
-    }
-    console.error('DB error:', bookingError.message)
+  if (rpcError) {
+    console.error('Booking RPC error:', rpcError.message)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 
-  // Increment odometer or decrement purchased credits
-  if ((profile.purchased_counselling ?? 0) > 0) {
-    await supabase
-      .from('student_profiles')
-      .update({ purchased_counselling: profile.purchased_counselling - 1 })
-      .eq('user_id', dbUser.id)
-  } else {
-    await supabase
-      .from('student_profiles')
-      .update({ used_free_counselling: (profile.used_free_counselling ?? 0) + 1 })
-      .eq('user_id', dbUser.id)
+  const result = rpcResult as { booking_id?: string; error?: string; status: number }
+
+  if (result.error) {
+    return NextResponse.json({ error: result.error }, { status: result.status })
   }
+
+  // Fetch the full booking record to return to the client
+  const { data: booking } = await supabase
+    .from('counselling_bookings')
+    .select('*, slot:counselling_slots(*)')
+    .eq('id', result.booking_id)
+    .single()
 
   return NextResponse.json({ data: booking }, { status: 201 })
 }
