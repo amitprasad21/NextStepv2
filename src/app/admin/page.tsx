@@ -25,18 +25,31 @@ export default function AdminDashboard() {
   const [metrics, setMetrics] = useState<Metrics | null>(null)
   const [loading, setLoading] = useState(true)
 
+  const [fetchError, setFetchError] = useState(false)
+
   const fetchMetrics = () => {
     fetch('/api/admin/metrics')
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error('Failed to fetch')
+        return r.json()
+      })
       .then((d) => {
         setMetrics(d.data)
         setLoading(false)
+        setFetchError(false)
+      })
+      .catch(() => {
+        setLoading(false)
+        setFetchError(true)
       })
   }
 
   useEffect(() => {
     fetchMetrics()
-    const interval = setInterval(fetchMetrics, 30000)
+    const interval = setInterval(() => {
+      // Skip polling when the tab is hidden — reduces DB load significantly
+      if (!document.hidden) fetchMetrics()
+    }, 30000)
     return () => clearInterval(interval)
   }, [])
 
@@ -52,8 +65,15 @@ export default function AdminDashboard() {
     )
   }
 
-  if (!metrics) {
-    return <p className="text-sm text-destructive">Failed to load metrics.</p>
+  if (!metrics || fetchError) {
+    return (
+      <div className="flex flex-col items-center gap-3 py-12 text-center">
+        <p className="text-sm text-destructive">Failed to load metrics.</p>
+        <button onClick={fetchMetrics} className="text-xs font-medium text-primary hover:underline">
+          Retry
+        </button>
+      </div>
+    )
   }
 
   const cards = [

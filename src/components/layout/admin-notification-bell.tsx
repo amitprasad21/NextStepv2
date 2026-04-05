@@ -64,10 +64,12 @@ export function AdminNotificationBell() {
     }
   }, [])
 
-  // Fetch on mount + poll every 30s
+  // Fetch on mount + poll every 30s (skip when tab is hidden)
   useEffect(() => {
     fetchNotifications()
-    const interval = setInterval(fetchNotifications, 30000)
+    const interval = setInterval(() => {
+      if (!document.hidden) fetchNotifications()
+    }, 30000)
     return () => clearInterval(interval)
   }, [fetchNotifications])
 

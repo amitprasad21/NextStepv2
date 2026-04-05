@@ -47,6 +47,35 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // ---- CSRF Protection: Block cross-origin mutations ----
+  if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method) && path.startsWith('/api')) {
+    const origin = request.headers.get('origin')
+    const host = request.headers.get('host')
+    // Allow requests with no origin (server-to-server, Razorpay webhooks, etc.)
+    // but block requests from a different origin (cross-site attacks)
+    if (origin && host) {
+      try {
+        const originHost = new URL(origin).host
+        if (originHost !== host) {
+          return addSecurityHeaders(
+            new NextResponse(JSON.stringify({ error: 'Forbidden' }), {
+              status: 403,
+              headers: { 'Content-Type': 'application/json' },
+            })
+          )
+        }
+      } catch {
+        // Malformed origin header — block it
+        return addSecurityHeaders(
+          new NextResponse(JSON.stringify({ error: 'Forbidden' }), {
+            status: 403,
+            headers: { 'Content-Type': 'application/json' },
+          })
+        )
+      }
+    }
+  }
+
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
